@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e30d7f6b-833a-4122-8bda-2f9c019598b2" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WS7_Agent.js" afterPath="$PROJECT_DIR$/WS7_Agent.js" />
-    </list>
+    <list default="true" id="e30d7f6b-833a-4122-8bda-2f9c019598b2" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -281,12 +279,12 @@
       <workItem from="1492188915777" duration="4290000" />
       <workItem from="1492420954619" duration="376000" />
       <workItem from="1492425898030" duration="12840000" />
-      <workItem from="1492442190362" duration="50000" />
+      <workItem from="1492442190362" duration="177000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43060000" />
+    <option name="totallyTimeSpent" value="43187000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="205" y="40" width="1400" height="1000" extended-state="0" />
