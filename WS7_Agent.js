@@ -43,8 +43,6 @@ request.post('http://localhost:3000/RTU/SimROB7/services/LoadPallet',
         } else {
             // Moves the pallet to the station 1, if the line is free
             move(35, 7);
-            if ()
-            move(14, 8);
 
 
         }
