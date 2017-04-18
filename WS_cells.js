@@ -108,14 +108,30 @@ Station.prototype.GetStatus = function (location, recept, ID)
 
 }
 
+Station.prototype.Subscribe = function (RTU_ID, service)
+{
+    port = 6000 + this.number;
+    console.log(port);
+
+    request.post('http://localhost:3000/RTU/SimROB' + this.number + '/events/' + service + '/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the " + service + " event!");
+            }
+        });
+
+}
+
 
 Station.prototype.start = function () {
     this.runServer();
-/*    this.SubscribeToCell('CNV','Z1_Changed')
-    this.SubscribeToCell('CNV','Z2_Changed')
-    this.SubscribeToCell('CNV','Z3_Changed')
-    this.SubscribeToCell('CNV','Z4_Changed')
-    this.SubscribeToCell('ROB','DrawEndExecution')*/
+    this.Subscribe('CNV','Z1_Changed')
+    this.Subscribe('CNV','Z2_Changed')
+    this.Subscribe('CNV','Z3_Changed')
+    this.Subscribe('CNV','Z4_Changed')
+    // this.Subscribe('ROB','DrawEndExecution')
 
 }
 

@@ -12,39 +12,137 @@ app.use(bodyParser.json()); // Body parser uses JSON data
 
 var port = 4805;
 
-// resets the lines when the program starts
-request.post('http://localhost:3000/RTU/reset',
-    {form:{destUrl:"http://localhost:" + port}}, function(err, httpResponse, body){
-        console.log(body);
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Reseted Fastory line");
-        }
-    });
+// Sunbscribes to the notifications
+function subscribe() {
+    // resets the lines when the program starts
+    request.post('http://localhost:3000/RTU/reset',
+        {form:{destUrl:"http://localhost:" + port}}, function(err, httpResponse, body){
+            console.log(body);
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Reseted Fastory line");
+            }
+        });
 
+    // get the notification when pallet is loaded to the zone3
+    request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the PalletLoaded event!");
+            }
+        });
+    // get the notification when the pallet has moved to the Z1 in CNV8
+    request.post('http://localhost:3000/RTU/SimCNV8/events/Z1_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z1 changed in station 8!");
+            }
+        });
+    // get the notification when the pallet has moved to the Z4 in CNV8
+    request.post('http://localhost:3000/RTU/SimCNV8/events/Z4_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z4 changed in station 8!");
+            }
+        });
 
-// get the notification when pallet is loaded to the zone3
-request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs',
-    {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("subscribed to the PalletLoaded event!");
-        }
-    });
+    // get the notification when the pallet has moved to the Z1 in CNV9
+    request.post('http://localhost:3000/RTU/SimCNV9/events/Z1_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z1 changed in station 9!");
+            }
+        });
+    // get the notification when the pallet has moved to the Z4 in CNV9
+    request.post('http://localhost:3000/RTU/SimCNV9/events/Z4_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z4 changed in station 9!");
+            }
+        });
+
+    // get the notification when the pallet has moved to the Z1 in CNV10
+    request.post('http://localhost:3000/RTU/SimCNV10/events/Z1_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z1 changed in station 10!");
+            }
+        });
+
+    // get the notification when the pallet has moved to the Z4 in CNV10
+    request.post('http://localhost:3000/RTU/SimCNV10/events/Z4_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z4 changed in station 10!");
+            }
+        });
+
+    // get the notification when the pallet has moved to the Z1 in CNV11
+    request.post('http://localhost:3000/RTU/SimCNV11/events/Z1_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z1 changed in station 11!");
+            }
+        });
+
+    // get the notification when the pallet has moved to the Z4 in CNV11
+    request.post('http://localhost:3000/RTU/SimCNV11/events/Z4_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z4 changed in station 11!");
+            }
+        });
+
+    // get the notification when the pallet has moved to the Z1 in CNV12
+    request.post('http://localhost:3000/RTU/SimCNV12/events/Z1_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z1 changed in station 12!");
+            }
+        });
+
+    // get the notification when the pallet has moved to the Z4 in CNV12
+    request.post('http://localhost:3000/RTU/SimCNV12/events/Z4_Changed/notifs',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("subscribed to the Z4 changed in station 12!");
+            }
+        });
+}
+
 
 // Load the pallets to the simulator
 request.post('http://localhost:3000/RTU/SimROB7/services/LoadPallet',
-    {form:{destUrl:"http://localhost:4007"}}, function(err,httpResponse,body){
+    {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
         // Checks for errors
         if (err) {
             console.log(err);
         } else {
             // Moves the pallet to the station 1, if the line is free
             move(35, 7);
-            if ()
-            move(14, 8);
 
 
         }
@@ -79,7 +177,50 @@ app.post('/', function(req, res){
     // Shows that we post now
     console.log("Got POST request that is: ");
     console.log(req.body);
-    console.log(req.query);
+    console.log(req.payload);
+    // All the following ifs are for moving the pallet from WS7 to the WS1
+    if (req.body.senderID = 'SimCNV8') {
+        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+            move(14, 8);
+        }
+        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+            move(45, 8);
+        }
+
+    }
+
+    if (req.body.senderID = 'SimCNV9') {
+        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+            move(14, 9);
+        }
+        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+            move(45, 9);
+        }
+    }
+    if (req.body.senderID = 'SimCNV10') {
+        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+            move(14, 10);
+        }
+        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+            move(45, 10);
+        }
+    }
+    if (req.body.senderID = 'SimCNV11') {
+        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+            move(14, 11);
+        }
+        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+            move(45, 11);
+        }
+    }
+    if (req.body.senderID = 'SimCNV12') {
+        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+            move(14, 12);
+        }
+        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+            move(45, 12);
+        }
+    }
 
     // jos halutaan vastaa jotain, ei pakollinen
     res.write("response is written here. thank you for sending POST to riikka.js");
@@ -87,6 +228,8 @@ app.post('/', function(req, res){
     // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
     res.end('post ok');
 });
+
+subscribe();
 
 // Start listening
 http.listen(port, function(){
