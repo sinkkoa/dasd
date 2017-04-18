@@ -23,8 +23,8 @@
       <file leaf-file-name="WS7_Agent.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/WS7_Agent.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-539">
-              <caret line="178" column="26" lean-forward="true" selection-start-line="178" selection-start-column="26" selection-end-line="178" selection-end-column="26" />
+            <state relative-caret-position="209">
+              <caret line="222" column="5" lean-forward="true" selection-start-line="222" selection-start-column="5" selection-end-line="222" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -286,21 +286,21 @@
       <workItem from="1492439636871" duration="1060000" />
       <workItem from="1492440736499" duration="7181000" />
       <workItem from="1492521047549" duration="3787000" />
-      <workItem from="1492527853730" duration="2645000" />
+      <workItem from="1492527853730" duration="2858000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="57683000" />
+    <option name="totallyTimeSpent" value="57896000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="676" y="0" width="697" height="735" extended-state="0" />
+    <frame x="676" y="0" width="697" height="735" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.06461087" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5136" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5136" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -519,8 +519,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WS7_Agent.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-539">
-          <caret line="178" column="26" lean-forward="true" selection-start-line="178" selection-start-column="26" selection-end-line="178" selection-end-column="26" />
+        <state relative-caret-position="209">
+          <caret line="222" column="5" lean-forward="true" selection-start-line="222" selection-start-column="5" selection-end-line="222" selection-end-column="5" />
           <folding />
         </state>
       </provider>
