@@ -46,29 +46,6 @@ Station.prototype.runServer =  function() {
                 console.log("Body???: " + body.toString());
                 //Handle request.
 
-                // Parses the elements from the body
-                var elem = body.toString()
-                // remove all the unnecassary chars
-                elem = replaceall('"', "", elem)
-                elem = replaceall('{', "", elem)
-                elem = replaceall('}', "", elem)
-                elem = replaceall('\n', "", elem)
-                elem = replaceall(' ', "", elem)
-                elem = elem.split(",");
-                var frame = elem[0];
-                frame = frame.split(":")
-                // frame = frame.substr(2);
-                var screen = elem[1];
-                screen = screen.split(":")
-                // screen = screen.substr(1);
-                var keyboard = elem[2];
-                keyboard = keyboard.split(":")
-                // keyboard = keyboard.substr(1);
-                // keyboard = keyboard.substr(0, keyboard.length - 2);
-                console.log(frame)
-                console.log(screen)
-                console.log(keyboard)
-
 
             })
         }

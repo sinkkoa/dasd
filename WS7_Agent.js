@@ -12,6 +12,11 @@ app.use(bodyParser.json()); // Body parser uses JSON data
 
 var port = 4805;
 
+// A json where we can store the pallets that are in the production line.
+// Now we can give the palets a variable that tells us if the pallet has a
+// destionation, or should the workstations decide it
+var pallets = {};
+
 // Sunbscribes to the notifications
 function subscribe() {
     // resets the lines when the program starts
@@ -178,47 +183,103 @@ app.post('/', function(req, res){
     console.log("Got POST request that is: ");
     console.log(req.body);
     console.log(req.payload);
+
+    if (req.body.id === 'PalletLoaded') {
+        pallets[req.body.payload.PalletID] = { destination: 1};
+    }
+
     // All the following ifs are for moving the pallet from WS7 to the WS1
     if (req.body.senderID === 'SimCNV8') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
-            move(14, 8);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(14, 8);
+                }
+            }
+
         }
         if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
-            move(45, 8);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(45, 8);
+                }
+            }
         }
 
     }
 
     if (req.body.senderID === 'SimCNV9') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
-            move(14, 9);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(14, 9);
+                }
+            }
         }
         if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
-            move(45, 9);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(45, 9);
+                }
+            }
         }
     }
     if (req.body.senderID === 'SimCNV10') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
-            move(14, 10);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(14, 10);
+                }
+            }
         }
         if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
-            move(45, 10);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(45, 10);
+                }
+            }
         }
     }
     if (req.body.senderID === 'SimCNV11') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
-            move(14, 11);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(14, 11);
+                }
+            }
         }
         if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
-            move(45, 11);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(45, 11);
+                }
+            }
         }
     }
     if (req.body.senderID === 'SimCNV12') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
-            move(14, 12);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(14, 12);
+                }
+            }
         }
         if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
-            move(45, 12);
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(45, 12);
+                }
+            }
         }
     }
 
