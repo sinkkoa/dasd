@@ -179,7 +179,7 @@ app.post('/', function(req, res){
     console.log(req.body);
     console.log(req.payload);
     // All the following ifs are for moving the pallet from WS7 to the WS1
-    if (req.body.senderID = 'SimCNV8') {
+    if (req.body.senderID === 'SimCNV8') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             move(14, 8);
         }
