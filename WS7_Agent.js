@@ -180,44 +180,44 @@ app.post('/', function(req, res){
     console.log(req.payload);
     // All the following ifs are for moving the pallet from WS7 to the WS1
     if (req.body.senderID = 'SimCNV8') {
-        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             move(14, 8);
         }
-        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+        if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
             move(45, 8);
         }
 
     }
 
-    if (req.body.senderID = 'SimCNV9') {
-        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+    if (req.body.senderID === 'SimCNV9') {
+        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             move(14, 9);
         }
-        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+        if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
             move(45, 9);
         }
     }
-    if (req.body.senderID = 'SimCNV10') {
-        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+    if (req.body.senderID === 'SimCNV10') {
+        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             move(14, 10);
         }
-        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+        if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
             move(45, 10);
         }
     }
-    if (req.body.senderID = 'SimCNV11') {
-        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+    if (req.body.senderID === 'SimCNV11') {
+        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             move(14, 11);
         }
-        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+        if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
             move(45, 11);
         }
     }
-    if (req.body.senderID = 'SimCNV12') {
-        if (req.body.id == 'Z1_Changed' && req.body.payload.PalletID != -1) {
+    if (req.body.senderID === 'SimCNV12') {
+        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             move(14, 12);
         }
-        if (req.body.id == 'Z4_Changed' && req.body.payload.PalletID != -1) {
+        if (req.body.id === 'Z4_Changed' && req.body.payload.PalletID !== -1) {
             move(45, 12);
         }
     }
