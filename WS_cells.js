@@ -41,11 +41,17 @@ Station.prototype.runServer =  function() {
             var body = []; //Getting data: https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
             req.on('data', function(chunk) {
                 body.push(chunk);
-                console.log("Body???: " + body.toString());
-                //Handle request.
-
+                console.log(chunk);
+                console.log("Body???: " + body);
+                var body2 = body.toString();
+               body2 = JSON.parse(body2);
+               console.log(body2)
+                console.log(body2.frame)
 
             })
+
+
+
         }
     })
     //     Server.listen(port, function() {
