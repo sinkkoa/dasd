@@ -13,32 +13,30 @@ app.use(bodyParser.json()); // Body parser uses JSON data
 
 var port = 4221;
 
-var Station = function Station(number, capability) {
+var Station = function Station(number, workpiece) {
     this.number = number;
-    // this.connections = [];
-    //this.flagVisited = false;
-    this.capability = capability;
+    this.workpiece = workpiece;
+    this.status = "idle";
     this.port = 1234;
     this.url = "127.0.0.1";
-    this.status = "idle";
 };
 
 Station.prototype.runServer =  function() {
     port = 6000 + this.number;
     var ref = this;
-    console.log(port);
+    console.log("Server port: " + port);
 
     var Server = http.createServer(function(req, res) {
         var method = req.method;
 
         console.log("Method: " + method);
 
-        if (method == 'GET') {
+        if (method === 'GET') {
             //Handle GET method.
             res.statusCode = 200;
             res.setHeader('Content-Type', 'text/plain');
             res.end('Agent ' + ref.number + ' is running.');
-        } else if (method == 'POST') {
+        } else if (method === 'POST') {
             //Handle POST method.
             var body = []; //Getting data: https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
             req.on('data', function(chunk) {
@@ -50,17 +48,17 @@ Station.prototype.runServer =  function() {
             })
         }
     })
-        Server.listen(port, function() {
-        console.log('Server started on port: ' + port);
-
-    })
-}
+    //     Server.listen(port, function() {
+    //     console.log('Server started on port: ' + port);
+    //
+    // })
+};
 
 Station.prototype.GetStatus = function (location, recept, ID)
 {
     console.log('Asking for the status '+ ID);
-    var ref = this
-    var cellport = serverBasePort+cellPlace
+    var ref = this;
+    var cellport = serverBasePort+cellPlace;
 
     var options = {
         uri: fastIP+':'+cellport, // What url
@@ -73,7 +71,7 @@ Station.prototype.GetStatus = function (location, recept, ID)
     var destination= 0;
     request(options, function (error, response, body){
 
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             console.log("palletin body =" + body); // Print the shortened url.
         }
         else
@@ -83,12 +81,12 @@ Station.prototype.GetStatus = function (location, recept, ID)
 
     })
 
-}
+};
 
 Station.prototype.Subscribe = function (RTU_ID, service)
 {
     port = 6000 + this.number;
-    console.log(port);
+    //console.log(port);
 
     request.post('http://localhost:3000/RTU/SimROB' + this.number + '/events/' + service + '/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
@@ -99,18 +97,18 @@ Station.prototype.Subscribe = function (RTU_ID, service)
             }
         });
 
-}
+};
 
 
 Station.prototype.start = function () {
     this.runServer();
-    this.Subscribe('CNV','Z1_Changed')
-    this.Subscribe('CNV','Z2_Changed')
-    this.Subscribe('CNV','Z3_Changed')
-    this.Subscribe('CNV','Z4_Changed')
+    this.Subscribe('CNV','Z1_Changed');
+    this.Subscribe('CNV','Z2_Changed');
+    this.Subscribe('CNV','Z3_Changed');
+    this.Subscribe('CNV','Z4_Changed');
     // this.Subscribe('ROB','DrawEndExecution')
 
-}
+};
 
 //****************** END OF CLASS DEFINTION*********************
 
@@ -121,16 +119,16 @@ var WS5 = new Station(5,'2');
 var WS6 = new Station(6,'2');
 var WS8 = new Station(8,'2');
 var WS9 = new Station(9,'3');
-var WS10 = new Station(10,'3')
-var WS11 = new Station(11,'3')
-var WS12 = new Station(12,'3')
-WS2.start()
-WS3.start()
-WS4.start()
-WS5.start()
-WS6.start()
-WS8.start()
-WS9.start()
-WS10.start()
-WS11.start()
-WS12.start()
+var WS10 = new Station(10,'3');
+var WS11 = new Station(11,'3');
+var WS12 = new Station(12,'3');
+WS2.start();
+WS3.start();
+WS4.start();
+WS5.start();
+WS6.start();
+WS8.start();
+WS9.start();
+WS10.start();
+WS11.start();
+WS12.start();

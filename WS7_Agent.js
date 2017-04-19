@@ -19,7 +19,7 @@ var pallets = {};
 
 // Sunbscribes to the notifications
 function subscribe() {
-    // resets the lines when the program starts
+    //resets the lines when the program starts
     request.post('http://localhost:3000/RTU/reset',
         {form:{destUrl:"http://localhost:" + port}}, function(err, httpResponse, body){
             console.log(body);
