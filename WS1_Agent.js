@@ -56,7 +56,7 @@ function subscribe() {
         });
 
     // get the notification when the paper is loaded to the pallet
-    request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs',
+    request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err, httpResponse, body) {
             if (err) {
                 console.log(err);
@@ -66,7 +66,7 @@ function subscribe() {
         });
 
     // get the notification when the paper is unloaded to the pallet
-    request.post('http://localhost:3000/RTU/SimROB7/events/PalletUnloaded/notifs',
+    request.post('http://localhost:3000/RTU/SimROB1/events/PaperUnloaded/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err, httpResponse, body) {
             if (err) {
                 console.log(err);
@@ -117,7 +117,6 @@ function unloadPaper() {
         });
 }
 
-
 // Takes the POST requests
 app.post('/', function(req, res) {
     // Shows that we post now
@@ -138,7 +137,7 @@ app.post('/', function(req, res) {
         }
     }
     // If for moving the pallet from the paper loading
-    if (req.body.senderID === 'ROB1') {
+    if (req.body.senderID === 'SimROB1') {
         if (req.body.id === 'PaperLoaded') {
             move(35,1);
         }

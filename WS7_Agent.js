@@ -138,26 +138,23 @@ function subscribe() {
         });
 }
 
+function loadPallet() {
+    // Load the pallets to the simulator
+    request.post('http://localhost:3000/RTU/SimROB7/services/LoadPallet',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            // Checks for errors
+            if (err) {
+                console.log(err);
+            } else {
+            }
 
-// Load the pallets to the simulator
-request.post('http://localhost:3000/RTU/SimROB7/services/LoadPallet',
-    {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-        // Checks for errors
-        if (err) {
-            console.log(err);
-        } else {
-            // Moves the pallet to the station 1, if the line is free
-            move(35, 7);
-
-
-        }
-
-        console.log("Loading pallet to the zone3!");
-        // debuggausta varten voi logata juttuja:
-        // console.log(err);
-        // console.log(body);
-        // console.log(httpResponse);
-    });
+            console.log("Loading pallet to the zone3!");
+            // debuggausta varten voi logata juttuja:
+            // console.log(err);
+            // console.log(body);
+            // console.log(httpResponse);
+        });
+}
 
 // a function that moves pallet to different zone
 function move(zone, station) {
@@ -216,16 +213,20 @@ app.post('/order/', function(req, res){
             console.log(response.statusCode, body);
         }
     });
+
+
+    // Load the pallet to FASTory line
+    loadPallet();
 });
 
 
 // Takes the POST requests
 app.post('/', function(req, res){
 
-
-
+    // Saves the pallet id with pallet info and moves the pallet when pallet is loaded
     if (req.body.id === 'PalletLoaded') {
         pallets[req.body.payload.PalletID] = { destination: 1};
+        move(35, 7);
     }
 
     // All the following ifs are for moving the pallet from WS7 to the WS1
