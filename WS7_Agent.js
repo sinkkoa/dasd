@@ -10,7 +10,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
 
-var port = 4805;
+var port = 6007;
 
 // A json where we can store the pallets that are in the production line.
 // Now we can give the palets a variable that tells us if the pallet has a
@@ -176,13 +176,53 @@ function move(zone, station) {
     });
 }
 
+// Make new order
+app.post('/order/', function(req, res){
+    var data = {
+        "New Order": ""
+    };
+
+    var query = req.query; //Accessing query
+
+    // Access the attributes and store them into variables
+    var frame = query.frame;
+    var screen = query.screen;
+    var keyboard = query.keyboard;
+    var fc = query.fc;
+    var sc = query.sc;
+    var kc = query.kc;
+
+    var options = {
+        url: "http://localhost:6001/", //Worksation 1
+        method: "POST",
+        //here we are using our server url:
+        json: {
+            "frame": frame,
+            "screen": screen,
+            "keyboard": keyboard,
+            "fc": fc,
+            "sc": sc,
+            "kc": kc
+        } //Body. These values get passed on when requested.
+    }
+
+    //logging request. just for debugging purposes, so that you can see if something goes wrong
+    console.log(JSON.stringify(options));
+    //request from require('request')
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+});
+
 
 // Takes the POST requests
 app.post('/', function(req, res){
-    // Shows that we post now
-    console.log("Got POST request that is: ");
-    console.log(req.body);
-    console.log(req.payload);
+
+
 
     if (req.body.id === 'PalletLoaded') {
         pallets[req.body.payload.PalletID] = { destination: 1};

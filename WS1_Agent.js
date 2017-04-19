@@ -10,7 +10,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
 
-var port = 4806;
+var port = 6001;
 
 // Sunbscribes to the notifications
 function subscribe() {

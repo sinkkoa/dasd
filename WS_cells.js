@@ -46,19 +46,22 @@ Station.prototype.runServer =  function() {
                 body = body.toString();
                 body = JSON.parse(body);
                 console.log("Parsed JSON body: " + body);
-                console.log(body.frame);
-
-
+                var frame = body.frame;
+                var keyboard = body.keyboard;
+                var screen = body.screen;
+                var sc = body.sc;
+                var kc = body.kc;
+                var fc = body.fc;
             })
 
 
 
         }
     })
-    //     Server.listen(port, function() {
-    //     console.log('Server started on port: ' + port);
-    //
-    // })
+        Server.listen(port, function() {
+        //console.log('Server started on port: ' + port);
+
+    })
 };
 
 Station.prototype.GetStatus = function (location, recept, ID)
