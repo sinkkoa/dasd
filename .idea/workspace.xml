@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="775dcfa3-c56f-4438-9497-8b463ca6c66e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WS7_Agent.js" afterPath="$PROJECT_DIR$/WS7_Agent.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WS_cells.js" afterPath="$PROJECT_DIR$/WS_cells.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -23,8 +22,8 @@
             <file leaf-file-name="WS_cells.js" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/WS_cells.js">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="630">
-                    <caret line="45" column="0" lean-forward="true" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+                  <state relative-caret-position="735">
+                    <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
                     <folding />
                   </state>
                 </provider>
@@ -41,8 +40,8 @@
       <file leaf-file-name="WS7_Agent.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/WS7_Agent.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2127">
-              <caret line="181" column="29" lean-forward="true" selection-start-line="181" selection-start-column="29" selection-end-line="181" selection-end-column="29" />
+            <state relative-caret-position="48">
+              <caret line="74" column="20" lean-forward="true" selection-start-line="74" selection-start-column="20" selection-end-line="74" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -198,12 +197,12 @@
       <option name="presentableId" value="Default" />
       <updated>1492601042732</updated>
       <workItem from="1492601044790" duration="31000" />
-      <workItem from="1492601151803" duration="7945000" />
+      <workItem from="1492601151803" duration="8751000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7976000" />
+    <option name="totallyTimeSpent" value="8782000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-909" y="220" width="918" height="1097" extended-state="0" />
@@ -240,16 +239,16 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/WS_cells.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="45" column="0" lean-forward="true" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+        <state relative-caret-position="735">
+          <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WS7_Agent.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2127">
-          <caret line="181" column="29" lean-forward="true" selection-start-line="181" selection-start-column="29" selection-end-line="181" selection-end-column="29" />
+        <state relative-caret-position="48">
+          <caret line="74" column="20" lean-forward="true" selection-start-line="74" selection-start-column="20" selection-end-line="74" selection-end-column="20" />
           <folding />
         </state>
       </provider>
