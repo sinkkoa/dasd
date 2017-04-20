@@ -245,7 +245,7 @@ function move(zone, station) {
 
     request(options, function (err, response, body) {
         if (err) { console.log(err);
-        } else { console.log("liikkuu");
+        } else { console.log("liikkuu -------------------->");
         }
     });
 }

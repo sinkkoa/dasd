@@ -7,6 +7,10 @@ var http = require('http');
 var request = require('request');
 var bodyParser = require('body-parser');
 var replaceall = require('replaceall');
+var WS7_Agent = require('./WS7_Agent.js');
+var WS1_Agent = require('./WS1_Agent.js');
+
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
