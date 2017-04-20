@@ -11,13 +11,12 @@ var replaceall = require('replaceall');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
 
-var port = 4221;
 
 var Station = function Station(number, workpiece) {
     this.number = number;
     this.workpiece = workpiece;
     this.status = "idle";
-    this.port = 1234;
+    this.port = 6000 + number;
     this.url = "127.0.0.1";
 };
 
@@ -45,25 +44,36 @@ Station.prototype.runServer =  function() {
                 //console.log("Body???: " + body);
                 body = body.toString();
                 body = JSON.parse(body);
-                console.log("Parsed JSON body: " + body);
+                console.log("Parsed JSON body: ");
+                console.log(body);
 
-                if (body.hasOwnProperty('id')){
+                if (body.hasOwnProperty('senderID')){
                     var id = body.id;
 
-                } else if (body.hasOwnProperty('pID')){
-                    var frame = body.frame;
-                    var screen = body.screen;
-                    var keyboard = body.keyboard;
-                    var fc = body.fc;
-                    var kc = body.kc;
-                    var sc = body.sc;
-                    var pID = body.pID;
-                    var destination = body.destination;
-                    var ready = body.ready;
+                    if (body.senderID === 'SimCNV' + ref.number) {
+                        if (body.id === 'Z1_Changed' && body.payload.PalletID !== -1) {
+                            var id = body.payload.PalletID;
+                            move(14, ref.number);
+
+                    }   
+                    if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
+                        var id = body.payload.PalletID;
+                        move(45, ref.number);
+                    }
+
+                    } else if (body.hasOwnProperty('pID')){
+                        var frame = body.frame;
+                        var screen = body.screen;
+                        var keyboard = body.keyboard;
+                        var fc = body.fc;
+                        var kc = body.kc;
+                        var sc = body.sc;
+                        var pID = body.pID;
+                        var destination = body.destination;
+                        var ready = body.ready;
+                    }
                 }
-
-
-
+        
             })
 
 
@@ -75,6 +85,23 @@ Station.prototype.runServer =  function() {
 
     })
 };
+
+// a function that moves pallet to different zone
+function move(zone, station) {
+    console.log("movePallet to zone: " + zone);
+
+    var options = {
+        uri: "http://localhost:3000/RTU/SimCNV" + station + "/services/TransZone" + zone,
+        method: 'POST',
+        json: {"destUrl": "http://localhost:" + port}
+    };
+
+    request(options, function (err, response, body) {
+        if (err) { console.log(err);
+        } else { console.log("liikkuu");
+        }
+    });
+}
 
 Station.prototype.GetStatus = function (location, recept, ID)
 {
@@ -107,10 +134,10 @@ Station.prototype.GetStatus = function (location, recept, ID)
 
 Station.prototype.Subscribe = function (RTU_ID, service)
 {
-    port = 6000 + this.number;
+    var port = 6000 + this.number;
     //console.log(port);
 
-    request.post('http://localhost:3000/RTU/SimROB' + this.number + '/events/' + service + '/notifs',
+    request.post('http://localhost:3000/RTU/SimCNV' + this.number + '/events/' + service + '/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
                 console.log(err);
@@ -134,16 +161,16 @@ Station.prototype.start = function () {
 
 //****************** END OF CLASS DEFINTION*********************
 
-var WS2 = new Station(2,'1');
-var WS3 = new Station(3,'1');
-var WS4 = new Station(4,'1');
-var WS5 = new Station(5,'2');
-var WS6 = new Station(6,'2');
-var WS8 = new Station(8,'2');
-var WS9 = new Station(9,'3');
-var WS10 = new Station(10,'3');
-var WS11 = new Station(11,'3');
-var WS12 = new Station(12,'3');
+var WS2 = new Station(2,'frame');
+var WS3 = new Station(3,'frame');
+var WS4 = new Station(4,'frame');
+var WS5 = new Station(5,'screen');
+var WS6 = new Station(6,'screen');
+var WS8 = new Station(8,'screen');
+var WS9 = new Station(9,'screen');
+var WS10 = new Station(10,'keyboard');
+var WS11 = new Station(11,'keyboard');
+var WS12 = new Station(12,'keyboard');
 WS2.start();
 WS3.start();
 WS4.start();
@@ -154,3 +181,5 @@ WS9.start();
 WS10.start();
 WS11.start();
 WS12.start();
+
+

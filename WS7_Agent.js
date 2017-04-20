@@ -284,7 +284,6 @@ app.post('/', function(req, res){
                 "pID": pID,
                 "destination": null,
                 "ready": false
-
             }
         
         }
@@ -292,7 +291,7 @@ app.post('/', function(req, res){
 
         
     }
-
+/*
     // All the following ifs are for moving the pallet from WS7 to the WS1
     if (req.body.senderID === 'SimCNV8') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
@@ -395,7 +394,7 @@ app.post('/', function(req, res){
                 }
             }
         }
-    }
+    }*/
 
 
     // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
