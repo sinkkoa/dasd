@@ -117,6 +117,26 @@ function unloadPaper() {
         });
 }
 
+// Request the pallet information from WS7
+function getInfo(pID) {
+    var options = {
+        uri: 'http://localhost:6007',
+        method: 'Post',
+        json: {
+            "id": "getInfo",
+            "pallet": pID,
+            "port": '6001'
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+};
+
 // Takes the POST requests
 app.post('/takeOrder', function(req, res) {
     // Shows that we post now
@@ -151,7 +171,8 @@ app.post('/', function(req, res) {
             move(23,1);
         }
         if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
-            loadPaper();
+            getInfo(req.body.payload.PalletID);
+            // loadPaper();
         }
     }
     // If for moving the pallet from the paper loading
@@ -164,7 +185,17 @@ app.post('/', function(req, res) {
     // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
     res.end('post ok');
 
-})
+});
+
+app.post('/info', function(req, res) {
+    console.log(req.body);
+    if (req.body.paper === false) {
+        loadPaper();
+    }
+
+
+    res.end('info ok');
+});
 
 // Calls the subscribe function
 subscribe();

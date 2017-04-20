@@ -127,7 +127,6 @@ Station.prototype.GetStatus = function (location, recept, ID)
         {
             console.log(error);
         }
-
     })
 
 };

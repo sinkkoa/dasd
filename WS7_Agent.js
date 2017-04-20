@@ -18,6 +18,14 @@ var port = 6007;
 // destionation, or should the workstations decide it
 var pallets = {};
 
+// Variables for saving the order details temporary
+var frame;
+var screen;
+var keyboard;
+var fc;
+var sc;
+var kc;
+
 // Sunbscribes to the notifications
 function subscribe() {
     //resets the lines when the program starts
@@ -40,103 +48,134 @@ function subscribe() {
                 console.log("subscribed to the PalletLoaded event!");
             }
         });
-    // get the notification when the pallet has moved to the Z1 in CNV8
-    request.post('http://localhost:3000/RTU/SimCNV8/events/Z1_Changed/notifs',
+
+    // get the notification when the pallet has moved to the Z1 in CNV7
+    request.post('http://localhost:3000/RTU/SimCNV7/events/Z1_Changed/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
                 console.log(err);
             } else {
-                console.log("subscribed to the Z1 changed in station 8!");
-            }
-        });
-    // get the notification when the pallet has moved to the Z4 in CNV8
-    request.post('http://localhost:3000/RTU/SimCNV8/events/Z4_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z4 changed in station 8!");
+                console.log("subscribed to the Z1 changed in station 7!");
             }
         });
 
-    // get the notification when the pallet has moved to the Z1 in CNV9
-    request.post('http://localhost:3000/RTU/SimCNV9/events/Z1_Changed/notifs',
+    // get the notification when the pallet has moved to the Z2 in CNV7
+    request.post('http://localhost:3000/RTU/SimCNV7/events/Z2_Changed/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
                 console.log(err);
             } else {
-                console.log("subscribed to the Z1 changed in station 9!");
-            }
-        });
-    // get the notification when the pallet has moved to the Z4 in CNV9
-    request.post('http://localhost:3000/RTU/SimCNV9/events/Z4_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z4 changed in station 9!");
+                console.log("subscribed to the Z1 changed in station 7!");
             }
         });
 
-    // get the notification when the pallet has moved to the Z1 in CNV10
-    request.post('http://localhost:3000/RTU/SimCNV10/events/Z1_Changed/notifs',
+    // get the notification when the pallet has moved to the Z3 in CNV7
+    request.post('http://localhost:3000/RTU/SimCNV7/events/Z3_Changed/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
                 console.log(err);
             } else {
-                console.log("subscribed to the Z1 changed in station 10!");
+                console.log("subscribed to the Z3 changed in station 7!");
             }
         });
 
-    // get the notification when the pallet has moved to the Z4 in CNV10
-    request.post('http://localhost:3000/RTU/SimCNV10/events/Z4_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z4 changed in station 10!");
-            }
-        });
-
-    // get the notification when the pallet has moved to the Z1 in CNV11
-    request.post('http://localhost:3000/RTU/SimCNV11/events/Z1_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z1 changed in station 11!");
-            }
-        });
-
-    // get the notification when the pallet has moved to the Z4 in CNV11
-    request.post('http://localhost:3000/RTU/SimCNV11/events/Z4_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z4 changed in station 11!");
-            }
-        });
-
-    // get the notification when the pallet has moved to the Z1 in CNV12
-    request.post('http://localhost:3000/RTU/SimCNV12/events/Z1_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z1 changed in station 12!");
-            }
-        });
-
-    // get the notification when the pallet has moved to the Z4 in CNV12
-    request.post('http://localhost:3000/RTU/SimCNV12/events/Z4_Changed/notifs',
-        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("subscribed to the Z4 changed in station 12!");
-            }
-        });
+    // // get the notification when the pallet has moved to the Z1 in CNV8
+    // request.post('http://localhost:3000/RTU/SimCNV8/events/Z1_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z1 changed in station 8!");
+    //         }
+    //     });
+    // // get the notification when the pallet has moved to the Z4 in CNV8
+    // request.post('http://localhost:3000/RTU/SimCNV8/events/Z4_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z4 changed in station 8!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z1 in CNV9
+    // request.post('http://localhost:3000/RTU/SimCNV9/events/Z1_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z1 changed in station 9!");
+    //         }
+    //     });
+    // // get the notification when the pallet has moved to the Z4 in CNV9
+    // request.post('http://localhost:3000/RTU/SimCNV9/events/Z4_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z4 changed in station 9!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z1 in CNV10
+    // request.post('http://localhost:3000/RTU/SimCNV10/events/Z1_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z1 changed in station 10!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z4 in CNV10
+    // request.post('http://localhost:3000/RTU/SimCNV10/events/Z4_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z4 changed in station 10!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z1 in CNV11
+    // request.post('http://localhost:3000/RTU/SimCNV11/events/Z1_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z1 changed in station 11!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z4 in CNV11
+    // request.post('http://localhost:3000/RTU/SimCNV11/events/Z4_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z4 changed in station 11!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z1 in CNV12
+    // request.post('http://localhost:3000/RTU/SimCNV12/events/Z1_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z1 changed in station 12!");
+    //         }
+    //     });
+    //
+    // // get the notification when the pallet has moved to the Z4 in CNV12
+    // request.post('http://localhost:3000/RTU/SimCNV12/events/Z4_Changed/notifs',
+    //     {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log("subscribed to the Z4 changed in station 12!");
+    //         }
+    //     });
 }
 
 function loadPallet() {
@@ -158,6 +197,21 @@ function loadPallet() {
         });
 }
 
+function sendInfo(info ,stationPort) {
+    var options = {
+        uri: 'http://localhost:' + stationPort + '/info',
+        method: 'Post',
+        json: info
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+}
+
 // a function that moves pallet to different zone
 function move(zone, station) {
     console.log("movePallet to zone: " + zone);
@@ -174,14 +228,6 @@ function move(zone, station) {
         }
     });
 }
-
-var frame;
-var screen;
-var keyboard;
-var fc;
-var sc;
-var kc;
-
 
 // Make new order
 app.post('/order/', function(req, res){
@@ -262,8 +308,16 @@ app.post('/', function(req, res){
 
     // Saves the pallet id with pallet info and moves the pallet when pallet is loaded
     if (req.body.id === 'PalletLoaded') {
-        pallets[req.body.payload.PalletID] = { 
-            destination: 1
+        pallets[req.body.payload.PalletID] = {
+            "frame": frame,
+            "screen": screen,
+            "keyboard": keyboard,
+            "fc": fc,
+            "sc": sc,
+            "kc": kc,
+            "destination": 1,
+            "paper": false,
+            "ready": false
          };
         move(35, 7);
         var pID = req.body.payload.PalletID;
@@ -287,10 +341,41 @@ app.post('/', function(req, res){
             }
         
         }
-    
-
-        
     }
+
+    if (req.body.id === 'getInfo') {
+        var information = pallets[req.body.pallet];
+        sendInfo(information, req.body.port);
+    }
+
+    if (req.body.senderID === 'SimCNV7') {
+        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(12, 7);
+                }
+            }
+        }
+        if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(23, 7);
+                }
+            }
+        }
+        if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
+            var id = req.body.payload.PalletID;
+            if (pallets.hasOwnProperty(id)) {
+                if (pallets[id].destination === 1) {
+                    move(35, 7);
+                }
+            }
+        }
+    }
+
+
 /*
     // All the following ifs are for moving the pallet from WS7 to the WS1
     if (req.body.senderID === 'SimCNV8') {
