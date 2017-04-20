@@ -118,11 +118,29 @@ function unloadPaper() {
 }
 
 // Takes the POST requests
-app.post('/', function(req, res) {
+app.post('/takeOrder', function(req, res) {
     // Shows that we post now
     console.log("Got POST request that is: ");
     console.log(req.body);
 
+    var jason = req.body;
+
+    jason.destination = 1;
+
+    console.log("Changed JSON body: ");
+    console.log(jason);
+
+    // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
+    res.end('post ok');
+
+})
+
+
+// Takes the POST requests
+app.post('/', function(req, res) {
+    // Shows that we post now
+    console.log("Got POST request that is: ");
+    console.log(req.body);
 
     // Ifs for moving the pallet to the paper loading
     if (req.body.senderID === 'SimCNV1') {

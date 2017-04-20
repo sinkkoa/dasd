@@ -6,6 +6,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var request = require('request');
 var bodyParser = require('body-parser');
+var uuid = require('uuid');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
@@ -146,6 +147,7 @@ function loadPallet() {
             if (err) {
                 console.log(err);
             } else {
+                //console.log(body);
             }
 
             console.log("Loading pallet to the zone3!");
@@ -173,24 +175,44 @@ function move(zone, station) {
     });
 }
 
+var frame;
+var screen;
+var keyboard;
+var fc;
+var sc;
+var kc;
+
+
 // Make new order
 app.post('/order/', function(req, res){
     var data = {
         "New Order": ""
     };
 
-    var query = req.query; //Accessing query
+    var query = req.query; //Accessing query -> en saanu bodyä ulos ja näytti että se ei ees mee tuohon queryyn
+                            // mutta jos postmanilla tekee tilausken parametreina niin ok.
+                            //Tallennetaan tilaus palletionlatauksen ytheydessä sen id:n kanssa samaan objektiin
 
+    //console.log(req);
+    console.log(query);
+    console.log();
     // Access the attributes and store them into variables
-    var frame = query.frame;
-    var screen = query.screen;
-    var keyboard = query.keyboard;
-    var fc = query.fc;
-    var sc = query.sc;
-    var kc = query.kc;
-
+    
+    frame = query.frame;
+    screen = query.screen;
+    keyboard = query.keyboard;
+    fc = query.fc;
+    sc = query.sc;
+    kc = query.kc;
+    //var pID = uuid.v4(); // -> Generating ID 
+/*
+    console.log(frame);
+    console.log(screen);
+    console.log(keyboard);
+*/
+/*
     var options = {
-        url: "http://localhost:6001/", //Worksation 1
+        url: "http://localhost:6001/takeOrder", //Worksation 1
         method: "POST",
         //here we are using our server url:
         json: {
@@ -199,34 +221,76 @@ app.post('/order/', function(req, res){
             "keyboard": keyboard,
             "fc": fc,
             "sc": sc,
-            "kc": kc
-        } //Body. These values get passed on when requested.
-    }
+            "kc": kc,
 
+            "pID": pID,
+            "destination": null,
+            "ready": false
+
+        } //Body. These values get passed on when requested.
+        
+    }
+    
     //logging request. just for debugging purposes, so that you can see if something goes wrong
     console.log(JSON.stringify(options));
     //request from require('request')
+    /*
     request(options, function (error, response, body) {
         if (error) {
             console.log(error);
         } else {
             console.log(response.statusCode, body);
         }
-    });
+    });*/
 
 
     // Load the pallet to FASTory line
     loadPallet();
+
+     // jos halutaan vastaa jotain, ei pakollinen
+    res.write("Thank you for orderin phone to riikka.js");
+
+    // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
+    res.end('post ok');
 });
 
 
 // Takes the POST requests
 app.post('/', function(req, res){
 
+    var options = {}
+
     // Saves the pallet id with pallet info and moves the pallet when pallet is loaded
     if (req.body.id === 'PalletLoaded') {
-        pallets[req.body.payload.PalletID] = { destination: 1};
+        pallets[req.body.payload.PalletID] = { 
+            destination: 1
+         };
         move(35, 7);
+        var pID = req.body.payload.PalletID;
+        console.log(pID);
+        
+        options = {
+            url: "http://localhost:6001/takeOrder", //Worksation 1
+            method: "POST",
+            //here we are using our server url:
+            json: {
+                "frame": frame,
+                "screen": screen,
+                "keyboard": keyboard,
+                "fc": fc,
+                "sc": sc,
+                "kc": kc,
+
+                "pID": pID,
+                "destination": null,
+                "ready": false
+
+            }
+        
+        }
+    
+
+        
     }
 
     // All the following ifs are for moving the pallet from WS7 to the WS1
@@ -311,6 +375,15 @@ app.post('/', function(req, res){
             if (pallets.hasOwnProperty(id)) {
                 if (pallets[id].destination === 1) {
                     move(14, 12);
+                    
+                    //pallet at end -> send pallet information to next station
+                    request(options, function (error, response, body) {
+                    if (error) {
+                        console.log(error);
+                        } else {
+                         console.log(response.statusCode, body);
+                        }
+                    });
                 }
             }
         }
@@ -324,8 +397,6 @@ app.post('/', function(req, res){
         }
     }
 
-    // jos halutaan vastaa jotain, ei pakollinen
-    res.write("response is written here. thank you for sending POST to riikka.js");
 
     // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
     res.end('post ok');
