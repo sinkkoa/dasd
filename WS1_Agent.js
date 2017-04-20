@@ -139,7 +139,7 @@ function getInfo(pID) {
 };
 
 // Update the paper information in the WS7
-function updateInfo(pID, paperStatus) {
+function updateInfo(pID, paperStatus, palletStatus) {
     var options = {
         uri: 'http://localhost:6007',
         method: 'Post',
@@ -147,6 +147,7 @@ function updateInfo(pID, paperStatus) {
             "id": "updateInfo",
             "pallet": pID,
             "paper": paperStatus,
+            "ready": palletStatus,
             "port": '6001'
         }
     };
@@ -218,11 +219,11 @@ app.post('/info', function(req, res) {
     console.log(req.body);
     if (req.body.paper === false) {
         loadPaper();
-        updateInfo(req.body.pID, true);
+        updateInfo(req.body.pID, true, false);
     }
     if (req.body.paper === true) {
         unloadPaper();
-        updateInfo(req.body.pID, false);
+        updateInfo(req.body.pID, false, true);
     }
 
     res.end('info ok');

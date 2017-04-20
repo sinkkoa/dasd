@@ -197,6 +197,25 @@ function loadPallet() {
         });
 }
 
+function unloadPallet() {
+    // Unload the pallet from the simulator
+    request.post('http://localhost:3000/RTU/SimROB7/services/UnloadPallet',
+        {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
+            // Checks for errors
+            if (err) {
+                console.log(err);
+            } else {
+                //console.log(body);
+            }
+
+            console.log("Unloading pallet from the zone3!");
+            // debuggausta varten voi logata juttuja:
+            // console.log(err);
+            // console.log(body);
+            // console.log(httpResponse);
+        });
+}
+
 // Send the pallet information to other stations
 function sendInfo(info ,stationPort) {
     var options = {
@@ -359,6 +378,8 @@ app.post('/', function(req, res){
             if (pallets[req.body.pallet]) {
                 pallets[req.body.pallet].paper = req.body.paper;
                 console.log("paper status updated!")
+                pallets[req.body.pallet].ready = req.body.ready;
+                console.log("pallet status updated as ready!")
             }
         }
     }
@@ -383,7 +404,13 @@ app.post('/', function(req, res){
         if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
             var id = req.body.payload.PalletID;
             if (pallets.hasOwnProperty(id)) {
-                if (pallets[id].destination === 1) {
+                if (pallets[id].paper === false && pallets[id].ready === true) {
+                    // No paper, so remove the pallet
+                    unloadPallet();
+                }
+
+                if (pallets[id].paper === true) {
+                    // Pallet has a paper, so send it the another round
                     move(35, 7);
                 }
             }
