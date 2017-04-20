@@ -46,12 +46,24 @@ Station.prototype.runServer =  function() {
                 body = body.toString();
                 body = JSON.parse(body);
                 console.log("Parsed JSON body: " + body);
-                var frame = body.frame;
-                var keyboard = body.keyboard;
-                var screen = body.screen;
-                var sc = body.sc;
-                var kc = body.kc;
-                var fc = body.fc;
+
+                if (body.hasOwnProperty('id')){
+                    var id = body.id;
+
+                } else if (body.hasOwnProperty('pID')){
+                    var frame = body.frame;
+                    var screen = body.screen;
+                    var keyboard = body.keyboard;
+                    var fc = body.fc;
+                    var kc = body.kc;
+                    var sc = body.sc;
+                    var pID = body.pID;
+                    var destination = body.destination;
+                    var ready = body.ready;
+                }
+
+
+
             })
 
 
@@ -71,14 +83,14 @@ Station.prototype.GetStatus = function (location, recept, ID)
     var cellport = serverBasePort+cellPlace;
 
     var options = {
-        uri: fastIP+':'+cellport, // What url
+        uri: fastIP + ':' + cellport, // What url
         method: 'POST',
         json: {
             "location" : ""+this.place+"", "recept": recept, "ID": ID
         }
     };
 
-    var destination= 0;
+    var destination = 0;
     request(options, function (error, response, body){
 
         if (!error && response.statusCode === 200) {
