@@ -106,8 +106,9 @@ function loadPaper() {
         });
 }
 
+// unloads the paper from the pallet
 function unloadPaper() {
-    request.post('http://localhost:3000/RTU/SimROB1/services/UnloadPallet',
+    request.post('http://localhost:3000/RTU/SimROB1/services/UnloadPaper',
         {form: {destUrl: "http://localhost:" + port}}, function (err, httpResponse, body) {
             if (err) {
                 console.log(err);
@@ -136,6 +137,27 @@ function getInfo(pID) {
         }
     });
 };
+
+// Update the paper information in the WS7
+function updateInfo(pID, paperStatus) {
+    var options = {
+        uri: 'http://localhost:6007',
+        method: 'Post',
+        json: {
+            "id": "updateInfo",
+            "pallet": pID,
+            "paper": paperStatus,
+            "port": '6001'
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+}
 
 // Takes the POST requests
 app.post('/takeOrder', function(req, res) {
@@ -175,9 +197,13 @@ app.post('/', function(req, res) {
             // loadPaper();
         }
     }
-    // If for moving the pallet from the paper loading
     if (req.body.senderID === 'SimROB1') {
+        // If for moving the pallet from the paper loading
         if (req.body.id === 'PaperLoaded') {
+            move(35,1);
+        }
+        // If for moving the pallet from the paper unloading
+        if (req.body.id === 'PaperUnloaded') {
             move(35,1);
         }
     }
@@ -187,12 +213,17 @@ app.post('/', function(req, res) {
 
 });
 
+// Handles the POST requests that are from WS7 sendInfo
 app.post('/info', function(req, res) {
     console.log(req.body);
     if (req.body.paper === false) {
         loadPaper();
+        updateInfo(req.body.pID, true);
     }
-
+    if (req.body.paper === true) {
+        unloadPaper();
+        updateInfo(req.body.pID, false);
+    }
 
     res.end('info ok');
 });

@@ -197,6 +197,7 @@ function loadPallet() {
         });
 }
 
+// Send the pallet information to other stations
 function sendInfo(info ,stationPort) {
     var options = {
         uri: 'http://localhost:' + stationPort + '/info',
@@ -211,6 +212,7 @@ function sendInfo(info ,stationPort) {
         }
     });
 }
+
 
 // a function that moves pallet to different zone
 function move(zone, station) {
@@ -308,6 +310,8 @@ app.post('/', function(req, res){
 
     // Saves the pallet id with pallet info and moves the pallet when pallet is loaded
     if (req.body.id === 'PalletLoaded') {
+        var pID = req.body.payload.PalletID;
+        console.log(pID);
         pallets[req.body.payload.PalletID] = {
             "frame": frame,
             "screen": screen,
@@ -315,13 +319,12 @@ app.post('/', function(req, res){
             "fc": fc,
             "sc": sc,
             "kc": kc,
+            "pID": pID,
             "destination": 1,
             "paper": false,
             "ready": false
          };
         move(35, 7);
-        var pID = req.body.payload.PalletID;
-        console.log(pID);
         
         options = {
             url: "http://localhost:6001/takeOrder", //Worksation 1
@@ -343,9 +346,21 @@ app.post('/', function(req, res){
         }
     }
 
+    // if the body has getInfo ID, uses sendInfo function to send the pallet info
     if (req.body.id === 'getInfo') {
         var information = pallets[req.body.pallet];
         sendInfo(information, req.body.port);
+    }
+
+    // If the body ID is updateInfo, cheks what data is changed, and changes it
+    if (req.body.id === 'updateInfo') {
+        // Paper info s now changed
+        if (req.body.hasOwnProperty('paper')) {
+            if (pallets[req.body.pallet]) {
+                pallets[req.body.pallet].paper = req.body.paper;
+                console.log("paper status updated!")
+            }
+        }
     }
 
     if (req.body.senderID === 'SimCNV7') {
