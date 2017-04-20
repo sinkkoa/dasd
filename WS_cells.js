@@ -54,24 +54,24 @@ Station.prototype.runServer =  function() {
                         if (body.id === 'Z1_Changed' && body.payload.PalletID !== -1) {
                             var id = body.payload.PalletID;
                             move(14, ref.number);
-
-                    }   
+                        }
+                    }
                     if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
                         var id = body.payload.PalletID;
                         move(45, ref.number);
                     }
 
-                    } else if (body.hasOwnProperty('pID')){
-                        var frame = body.frame;
-                        var screen = body.screen;
-                        var keyboard = body.keyboard;
-                        var fc = body.fc;
-                        var kc = body.kc;
-                        var sc = body.sc;
-                        var pID = body.pID;
-                        var destination = body.destination;
-                        var ready = body.ready;
-                    }
+
+                } else if (body.hasOwnProperty('pID')){
+                    var frame = body.frame;
+                    var screen = body.screen;
+                    var keyboard = body.keyboard;
+                    var fc = body.fc;
+                    var kc = body.kc;
+                    var sc = body.sc;
+                    var pID = body.pID;
+                    var destination = body.destination;
+                    var ready = body.ready;
                 }
         
             })
