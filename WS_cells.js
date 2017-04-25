@@ -15,19 +15,21 @@ var WS1_Agent = require('./WS1_Agent.js');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
 
-
+// Workstation information
 var Station = function Station(number, workpiece) {
     this.number = number;
     this.workpiece = workpiece;
+    this.color = "blue";
     this.status = "idle";
     this.port = 6000 + number;
-    this.url = "127.0.0.1";
+    this.currentPallet = 0;
 };
 
+// A function that runs all the workstation servers
 Station.prototype.runServer =  function() {
-    port = 6000 + this.number;
+
     var ref = this;
-    console.log("Server port: " + port);
+    console.log("Server port: " + ref.port);
 
     var Server = http.createServer(function(req, res) {
         var method = req.method;
@@ -41,7 +43,7 @@ Station.prototype.runServer =  function() {
             res.end('Agent ' + ref.number + ' is running.');
         } else if (method === 'POST') {
             //Handle POST method.
-            var body = []; //Getting data: https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
+            var body = [];
             req.on('data', function(chunk) {
                 body.push(chunk);
                 //console.log(chunk);
@@ -51,31 +53,93 @@ Station.prototype.runServer =  function() {
                 console.log("Parsed JSON body: ");
                 console.log(body);
 
+                // If the body has a senderID, we know that the post has come from Fastory line
                 if (body.hasOwnProperty('senderID')){
                     var id = body.id;
 
+                    // Catch the messages if they have come from CNV
                     if (body.senderID === 'SimCNV' + ref.number) {
+                        var pID = body.payload.PalletID;
                         if (body.id === 'Z1_Changed' && body.payload.PalletID !== -1) {
-                            var id = body.payload.PalletID;
+                            // The pallet is now in zone 1 and therefore we want to check do we need
+                            // to move the pallet to robot or to next station
+
+                            // Ask the status of pallet
+                            getInfo(pID,ref.port);
+
+                            // If destination is not decided,
                             move(14, ref.number);
                         }
+                        // Wait for Z2 change and then move to Z3
+                        else if (body.id === 'Z2_Changed' && body.payload.PalletID !== -1){
+                            move(23,ref.number);
+                        }
+
+                        // Wait for Z2 change and then move to Z3
+                        else if (body.id === 'Z3_Changed' && body.payload.PalletID !== -1){
+                            Console.log("Now drawing at WS" + ref.number);
+                            getInfo(pID,ref.port);
+                        }
+                        else if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
+                            // The pallet is in zone 4, so we want to move it to next station
+                            move(45, ref.number);
+                        }
                     }
-                    if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
-                        var id = body.payload.PalletID;
-                        move(45, ref.number);
+                    // Catch the messages if they have come from ROB
+                    if (body.senderID === 'SimROB' + ref.number) {
+                        if (body.id === 'PenChanged') {
+                            getInfo(pID,ref.port);
+                        }
                     }
 
 
-                } else if (body.hasOwnProperty('pID')){
-                    var frame = body.frame;
-                    var screen = body.screen;
-                    var keyboard = body.keyboard;
-                    var fc = body.fc;
-                    var kc = body.kc;
-                    var sc = body.sc;
-                    var pID = body.pID;
-                    var destination = body.destination;
-                    var ready = body.ready;
+
+                } else if (body.hasOwnProperty('destination')){
+                    if (body.destination === 0) {
+                        // Decide the next destination
+                    }
+                    // If the destination is same as this station, move the pallet to the station
+                    else if (body.destination === ref.number && ref.currentPallet === 0) {
+                        ref.status = "busy";
+                        ref.currentPallet = body.pID;
+                        move(12,ref.number);
+
+                    }
+                    else if (body.destination === ref.number && ref.currentPallet !== 0) {
+                        if (ref.workpiece = "frame"){
+                            if (ref.color === body.fc){
+                                draw(ref.number, ref.workpiece, body);
+                            } else {
+                                changePen(ref.number, body.fc);
+                            }
+                        }
+                        else if (ref.workpiece = "screen"){
+                            if (ref.color === body.fc){
+                                draw(ref.number, ref.workpiece, body);
+                            } else {
+
+                            }
+                        }
+                        else if (ref.workpiece = "keyboard"){
+                            if (ref.color === body.fc){
+                                draw(ref.number, ref.workpiece, body);
+                            } else {
+
+                            }
+                        }
+
+                    }
+                    // If the destination is further than the current workstation --> Move on
+                    else if (body.destination > ref.number) {
+                        if (body.id === 'Z1_Changed' && body.payload.PalletID !== -1) {
+                            // The pallet is now in zone 1 and therefore we want to move it on to Z4
+                            move(14, ref.number);
+                        }
+                        if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
+                            // The pallet is in zone 4, so we want to move it to next station
+                            move(45, ref.number);
+                        }
+                    }
                 }
         
             })
@@ -84,8 +148,8 @@ Station.prototype.runServer =  function() {
 
         }
     })
-        Server.listen(port, function() {
-        //console.log('Server started on port: ' + port);
+        Server.listen(this.port, function() {
+        //console.log('Server started on port: ' + ref.port);
 
     })
 };
@@ -93,6 +157,7 @@ Station.prototype.runServer =  function() {
 // a function that moves pallet to different zone
 function move(zone, station) {
     console.log("movePallet to zone: " + zone);
+    var port = 6000 + station;
 
     var options = {
         uri: "http://localhost:3000/RTU/SimCNV" + station + "/services/TransZone" + zone,
@@ -107,7 +172,86 @@ function move(zone, station) {
     });
 }
 
-Station.prototype.GetStatus = function (location, recept, ID)
+function changePen(station, colour) {
+
+    var port = 6000 + station;
+    colour = colour.toUpperCase();
+
+    var options = {
+        uri: "http://localhost:3000/RTU/SimROB" + station + "/services/ChangePen" + colour,
+        method: 'POST',
+        json: {"destUrl": "http://localhost:" + port}
+    };
+
+    request(options, function (err, response, body) {
+        if (err) { console.log(err);
+        } else { console.log("Colour changed");
+        }
+    });
+}
+
+// a function that draws to paper
+function draw(station, tool, pallet) {
+    console.log("movePallet to zone: " + zone);
+
+
+    var port = 6000 + station;
+
+    var options = {
+        uri: "http://localhost:3000/RTU/SimCNV" + station + "/services/TransZone" + zone,
+        method: 'POST',
+        json: {"destUrl": "http://localhost:" + port}
+    };
+
+    request(options, function (err, response, body) {
+        if (err) { console.log(err);
+        } else { console.log("Picture drawn");
+        }
+    });
+}
+
+// Request the pallet information from WS7
+function getInfo(pID, port) {
+    var options = {
+        uri: 'http://localhost:6007',
+        method: 'Post',
+        json: {
+            "id": "getInfo",
+            "pallet": pID,
+            "port": port
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+};
+
+Station.prototype.SendStatus = function () {
+    console.log('Sending the status');
+    ref = this;
+
+    var options = {
+        uri: 'http://localhost:' + ref.port,
+        method: 'POST',
+        json: {
+            "status" : ref.status
+        }
+    };
+
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+};
+
+/*Station.prototype.GetStatus = function (location, recept, ID)
 {
     console.log('Asking for the status '+ ID);
     var ref = this;
@@ -133,14 +277,14 @@ Station.prototype.GetStatus = function (location, recept, ID)
         }
     })
 
-};
+};*/
 
 Station.prototype.Subscribe = function (RTU_ID, service)
 {
     var port = 6000 + this.number;
     //console.log(port);
 
-    request.post('http://localhost:3000/RTU/SimCNV' + this.number + '/events/' + service + '/notifs',
+    request.post('http://localhost:3000/RTU/Sim' + RTU_ID + this.number + '/events/' + service + '/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
                 console.log(err);
@@ -151,19 +295,21 @@ Station.prototype.Subscribe = function (RTU_ID, service)
 
 };
 
-
+// Start the server and subscribes
 Station.prototype.start = function () {
     this.runServer();
     this.Subscribe('CNV','Z1_Changed');
     this.Subscribe('CNV','Z2_Changed');
     this.Subscribe('CNV','Z3_Changed');
     this.Subscribe('CNV','Z4_Changed');
+    this.Subscribe('ROB', 'PenChanged');
     // this.Subscribe('ROB','DrawEndExecution')
 
 };
 
 //****************** END OF CLASS DEFINTION*********************
 
+// Define all the stations
 var WS2 = new Station(2,'frame');
 var WS3 = new Station(3,'frame');
 var WS4 = new Station(4,'frame');
@@ -174,6 +320,8 @@ var WS9 = new Station(9,'screen');
 var WS10 = new Station(10,'keyboard');
 var WS11 = new Station(11,'keyboard');
 var WS12 = new Station(12,'keyboard');
+
+// Start servers for the stations
 WS2.start();
 WS3.start();
 WS4.start();

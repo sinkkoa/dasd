@@ -161,70 +161,55 @@ function updateInfo(pID, paperStatus, palletStatus) {
 }
 
 // Takes the POST requests
-app.post('/takeOrder', function(req, res) {
-    // Shows that we post now
-    console.log("Got POST request that is: ");
-    console.log(req.body);
-
-    var jason = req.body;
-
-    jason.destination = 1;
-
-    console.log("Changed JSON body: ");
-    console.log(jason);
-
-    // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
-    res.end('post ok');
-
-})
-
-
-// Takes the POST requests
 app.post('/', function(req, res) {
     // Shows that we post now
     console.log("Got POST request that is: ");
     console.log(req.body);
 
-    // Ifs for moving the pallet to the paper loading
-    if (req.body.senderID === 'SimCNV1') {
-        if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
-            move(12,1);
+    if (req.body.hasOwnProperty('senderID')) {
+        // Ifs for moving the pallet to the paper loading
+        if (req.body.senderID === 'SimCNV1') {
+            if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
+                move(12,1);
+            }
+            if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
+                move(23,1);
+            }
+            if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
+                getInfo(req.body.payload.PalletID);
+                // loadPaper();
+            }
         }
-        if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
-            move(23,1);
-        }
-        if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
-            getInfo(req.body.payload.PalletID);
-            // loadPaper();
+        if (req.body.senderID === 'SimROB1') {
+            // If for moving the pallet from the paper loading
+            if (req.body.id === 'PaperLoaded') {
+                move(35,1);
+            }
+            // If for moving the pallet from the paper unloading
+            if (req.body.id === 'PaperUnloaded') {
+                move(35,1);
+            }
         }
     }
-    if (req.body.senderID === 'SimROB1') {
-        // If for moving the pallet from the paper loading
-        if (req.body.id === 'PaperLoaded') {
-            move(35,1);
+    if (req.body.hasOwnProperty('paper')) {
+        if (req.body.paper === false) {
+            loadPaper();
+            updateInfo(req.body.pID, true, false);
         }
-        // If for moving the pallet from the paper unloading
-        if (req.body.id === 'PaperUnloaded') {
-            move(35,1);
+        if (req.body.paper === true) {
+            unloadPaper();
+            updateInfo(req.body.pID, false, true);
         }
     }
 
-    // tää on hyvä laittaa, muuten saattaa tulla timeoutteja yms kun lähettäjä odottelee vastauksen loppua
-    res.end('post ok');
+    res.end('Post ok');
 
 });
 
 // Handles the POST requests that are from WS7 sendInfo
 app.post('/info', function(req, res) {
     console.log(req.body);
-    if (req.body.paper === false) {
-        loadPaper();
-        updateInfo(req.body.pID, true, false);
-    }
-    if (req.body.paper === true) {
-        unloadPaper();
-        updateInfo(req.body.pID, false, true);
-    }
+
 
     res.end('info ok');
 });
