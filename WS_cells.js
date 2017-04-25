@@ -69,7 +69,7 @@ Station.prototype.runServer =  function() {
                             getInfo(pID,ref.port);
 
                             // If destination is not decided,
-                            move(14, ref.number);
+                            // move(14, ref.number);
                         }
                         // Wait for Z2 change and then move to Z3
                         else if (body.id === 'Z2_Changed' && body.payload.PalletID !== -1){
@@ -122,7 +122,22 @@ Station.prototype.runServer =  function() {
                             draw(ref.number, ref.workpiece, currentOrder);
                         }
                         if (body.id === 'DrawEndExecution') {
-                            move(34, ref.number);
+                            // Ask the next destination based on what station pallet is
+                            if (ref.number === 2 || ref.number === 3 || ref.number === 4) {
+                                ref.requestStatus(6005);
+                            }
+                            else if (ref.number === 5 || ref.number === 6 || ref.number === 8) {
+                                ref.requestStatus(6009);
+                            }
+                            else if (ref.number === 9 || ref.number === 10 || ref.number === 11) {
+                                // Something happens
+                            }
+
+
+                            // Move to next destination
+                            // move(35, ref.number);
+                            // ref.status = 'idle';
+
                         }
                     }
 
@@ -164,22 +179,42 @@ Station.prototype.runServer =  function() {
                         }
 
                     }*/
-                    // If the destination is further than the current workstation --> Move on
-                    else if (body.destination > ref.number) {
-                        if (body.id === 'Z1_Changed' && body.payload.PalletID !== -1) {
-                            // The pallet is now in zone 1 and therefore we want to move it on to Z4
-                            move(14, ref.number);
-                        }
-                        if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
+                    // If the destination is further than the current workstation or it is station 1 --> Move on
+                    else if (body.destination > ref.number || body.destination === 1) {
+                        // The pallet is now in zone 1, and needs to move forward
+                        move(14, ref.number);
+/*                        if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
                             // The pallet is in zone 4, so we want to move it to next station
                             move(45, ref.number);
-                        }
+                        }*/
                     }
+                }
+                // If the status of the station is requested, sends it
+                else if (body.hasOwnProperty('id')) {
+                    if (body.id === 'getStatus') {
+                        ref.SendStatus(body.port)
+                    }
+                }
+                else if (body.hasOwnProperty('status')) {
+                    if (body.status === 'idle') {
+                        console.log("UPDATE DESTINATION")
+                        updateDestination(currentOrder.pID, body.station);
+                      //  helpnumber = 0;
+                        ref.status = 'idle';
+                        move(35,ref.number);
+                        // maybe update status now
+                    }
+                    // Station is not idle, so we asks the other two stations
+                    /*else {
+                        ++ helpnumber;
+                        if (helpnumber > 2) {
+                            helpnumber = 0;
+                        }
+                        requestStatus(6002 + helpnumber, 6001);
+                    }*/
                 }
         
             })
-
-
 
         }
     })
@@ -227,13 +262,21 @@ function changePen(station, colour) {
 
 // a function that draws to paper
 function draw(station, tool, pallet) {
-    console.log("movePallet to zone: " + zone);
-
-
     var port = 6000 + station;
+    var recipe;
+    // Decide what recipe to use
+    if (tool === 'frame') {
+        recipe = pallet.frame;
+    }
+    else if (tool === 'keyboard') {
+        recipe = 3 + pallet.keyboard;
+    }
+    else if (tool === 'screen') {
+        recipe = 6 + pallet.screen;
+    }
 
     var options = {
-        uri: "http://localhost:3000/RTU/SimCNV" + station + "/services/TransZone" + zone,
+        uri: "http://localhost:3000/RTU/SimROB" + station + "/services/Draw" + recipe,
         method: 'POST',
         json: {"destUrl": "http://localhost:" + port}
     };
@@ -244,6 +287,26 @@ function draw(station, tool, pallet) {
         }
     });
 }
+
+function updateDestination(pID, destination) {
+    var options = {
+        uri: 'http://localhost:6007',
+        method: 'Post',
+        json: {
+            "id": "updateDestination",
+            "pallet": pID,
+            "destination": destination,
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+}
+
 
 // Request the pallet information from WS7
 function getInfo(pID, port) {
@@ -265,15 +328,35 @@ function getInfo(pID, port) {
     });
 };
 
-Station.prototype.SendStatus = function () {
+Station.prototype.requestStatus = function (stationPort) {
+    var ref = this
+    var options = {
+        uri: 'http://localhost:' + stationPort,
+        method: 'Post',
+        json: {
+            "id": "getStatus",
+            "port": ref.port
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+}
+
+Station.prototype.SendStatus = function (requestedPort) {
     console.log('Sending the status');
-    ref = this;
+    var ref = this;
 
     var options = {
-        uri: 'http://localhost:' + ref.port,
+        uri: 'http://localhost:' + requestedPort,
         method: 'POST',
         json: {
-            "status" : ref.status
+            "status": ref.status,
+            "station": ref.number
         }
     };
 
@@ -284,6 +367,12 @@ Station.prototype.SendStatus = function () {
             console.log(response.statusCode, body);
         }
     });
+
+    // Now if the status was send as idle, lets change it to busy
+    // because a pallet has now been assigned to it
+    if (ref.status === 'idle') {
+        ref.status = 'busy'
+    }
 };
 
 /*Station.prototype.GetStatus = function (location, recept, ID)

@@ -11,6 +11,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 var port = 6001;
+var helpnumber = 0;
+var pIDinStation;
 
 // Sunbscribes to the notifications
 function subscribe() {
@@ -138,16 +140,55 @@ function getInfo(pID) {
     });
 };
 
+function requestStatus(stationPort, asker) {
+    var options = {
+        uri: 'http://localhost:' + stationPort,
+        method: 'Post',
+        json: {
+            "id": "getStatus",
+            "port": asker
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+}
+
 // Update the paper information in the WS7
-function updateInfo(pID, paperStatus, palletStatus) {
+function updateInfoPaper(pID, paperStatus, palletStatus) {
     var options = {
         uri: 'http://localhost:6007',
         method: 'Post',
         json: {
-            "id": "updateInfo",
+            "id": "updateInfoPaper",
             "pallet": pID,
             "paper": paperStatus,
             "ready": palletStatus,
+            "port": '6001'
+        }
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(response.statusCode, body);
+        }
+    });
+}
+
+// Update the pallet destination in the WS7
+function updateDestination(pID, destination) {
+    var options = {
+        uri: 'http://localhost:6007',
+        method: 'Post',
+        json: {
+            "id": "updateDestination",
+            "pallet": pID,
+            "destination": destination,
             "port": '6001'
         }
     };
@@ -177,13 +218,15 @@ app.post('/', function(req, res) {
             }
             if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
                 getInfo(req.body.payload.PalletID);
+                pIDinStation = req.body.payload.PalletID;
                 // loadPaper();
             }
         }
         if (req.body.senderID === 'SimROB1') {
             // If for moving the pallet from the paper loading
             if (req.body.id === 'PaperLoaded') {
-                move(35,1);
+                requestStatus(6002, 6001);
+   //             move(35,1);
             }
             // If for moving the pallet from the paper unloading
             if (req.body.id === 'PaperUnloaded') {
@@ -191,14 +234,31 @@ app.post('/', function(req, res) {
             }
         }
     }
+    if (req.body.hasOwnProperty('status')) {
+        if (req.body.status === 'idle') {
+            console.log("UPDATE DESTINATION")
+            updateDestination(pIDinStation, req.body.station);
+            helpnumber = 0;
+            move(35,1);
+            // maybe update status now
+        }
+        // Station is not idle, so we asks the other two stations
+        else {
+            ++ helpnumber;
+            if (helpnumber > 2) {
+                helpnumber = 0;
+            }
+            requestStatus(6002 + helpnumber, 6001);
+        }
+    }
     if (req.body.hasOwnProperty('paper')) {
         if (req.body.paper === false) {
             loadPaper();
-            updateInfo(req.body.pID, true, false);
+            updateInfoPaper(req.body.pID, true, false);
         }
         if (req.body.paper === true) {
             unloadPaper();
-            updateInfo(req.body.pID, false, true);
+            updateInfoPaper(req.body.pID, false, true);
         }
     }
 
@@ -206,13 +266,6 @@ app.post('/', function(req, res) {
 
 });
 
-// Handles the POST requests that are from WS7 sendInfo
-app.post('/info', function(req, res) {
-    console.log(req.body);
-
-
-    res.end('info ok');
-});
 
 // Calls the subscribe function
 subscribe();

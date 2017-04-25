@@ -236,8 +236,8 @@ app.post('/', function(req, res){
         sendInfo(information, req.body.port);
     }
 
-    // If the body ID is updateInfo, cheks what data is changed, and changes it
-    if (req.body.id === 'updateInfo') {
+    // If the body ID is updateInfoPaper, checks what data is changed, and changes it
+    if (req.body.id === 'updateInfoPaper') {
         // Paper info s now changed
         if (req.body.hasOwnProperty('paper')) {
             if (pallets[req.body.pallet]) {
@@ -246,6 +246,15 @@ app.post('/', function(req, res){
                 pallets[req.body.pallet].ready = req.body.ready;
                 console.log("pallet status updated as ready!")
             }
+        }
+    }
+    if (req.body.id === 'updateDestination') {
+        // Destination is now changed
+        console.log("DESTINATION INFO")
+        console.log(req.body)
+        if (pallets[req.body.pallet]) {
+            pallets[req.body.pallet].destination = req.body.destination;
+            console.log("destination updated!")
         }
     }
 
