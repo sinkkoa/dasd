@@ -29,6 +29,7 @@ var Station = function Station(number, workpiece) {
 Station.prototype.runServer =  function() {
 
     var ref = this;
+    var currentOrder = {};
     console.log("Server port: " + ref.port);
 
     var Server = http.createServer(function(req, res) {
@@ -75,10 +76,39 @@ Station.prototype.runServer =  function() {
                             move(23,ref.number);
                         }
 
-                        // Wait for Z2 change and then move to Z3
+                        // Wait for Z3 change and then check is this frame, screen or keyboard station
                         else if (body.id === 'Z3_Changed' && body.payload.PalletID !== -1){
-                            Console.log("Now drawing at WS" + ref.number);
-                            getInfo(pID,ref.port);
+                            if (ref.workpiece = "frame"){
+                                // If the station has right pen, draws the picture
+                                if (ref.color === currentOrder.fc){
+                                    console.log("Drawing a frame")
+                                    draw(ref.number, ref.workpiece, currentOrder);
+                                }
+                                // If the pen is not right, change the pen
+                                else {
+                                    console.log("Changing the pen colour")
+                                    changePen(ref.number, currentOrder.fc);
+                                }
+                            }
+                            else if (ref.workpiece = "screen"){
+                                if (ref.color === currentOrder.fc){
+                                    console.log("Drawing a screen")
+                                    draw(ref.number, ref.workpiece, currentOrder);
+                                } else {
+                                    console.log("Changing the pen colour")
+                                    changePen(ref.number, currentOrder.fc);
+                                }
+                            }
+                            else if (ref.workpiece = "keyboard"){
+                                if (ref.color === currentOrder.fc){
+                                    console.log("Drawing a keyboard")
+                                    draw(ref.number, ref.workpiece, currentOrder);
+                                } else {
+                                    console.log("Changing the pen colour")
+                                    changePen(ref.number, currentOrder.fc);
+                                }
+                            }
+
                         }
                         else if (body.id === 'Z4_Changed' && body.payload.PalletID !== -1) {
                             // The pallet is in zone 4, so we want to move it to next station
@@ -88,24 +118,29 @@ Station.prototype.runServer =  function() {
                     // Catch the messages if they have come from ROB
                     if (body.senderID === 'SimROB' + ref.number) {
                         if (body.id === 'PenChanged') {
-                            getInfo(pID,ref.port);
+                            console.log("Drawing a " + ref.workpiece)
+                            draw(ref.number, ref.workpiece, currentOrder);
+                        }
+                        if (body.id === 'DrawEndExecution') {
+                            move(34, ref.number);
                         }
                     }
 
 
-
+                // The body now has destination in it, so it has come from WS7 and is telling the pallet details
                 } else if (body.hasOwnProperty('destination')){
                     if (body.destination === 0) {
                         // Decide the next destination
                     }
                     // If the destination is same as this station, move the pallet to the station
-                    else if (body.destination === ref.number && ref.currentPallet === 0) {
+                    else if (body.destination === ref.number) {
+                        currentOrder = body;
                         ref.status = "busy";
                         ref.currentPallet = body.pID;
                         move(12,ref.number);
 
                     }
-                    else if (body.destination === ref.number && ref.currentPallet !== 0) {
+/*                    else if (body.destination === ref.number && ref.currentPallet !== 0) {
                         if (ref.workpiece = "frame"){
                             if (ref.color === body.fc){
                                 draw(ref.number, ref.workpiece, body);
@@ -128,7 +163,7 @@ Station.prototype.runServer =  function() {
                             }
                         }
 
-                    }
+                    }*/
                     // If the destination is further than the current workstation --> Move on
                     else if (body.destination > ref.number) {
                         if (body.id === 'Z1_Changed' && body.payload.PalletID !== -1) {
@@ -302,8 +337,8 @@ Station.prototype.start = function () {
     this.Subscribe('CNV','Z2_Changed');
     this.Subscribe('CNV','Z3_Changed');
     this.Subscribe('CNV','Z4_Changed');
-    this.Subscribe('ROB', 'PenChanged');
-    // this.Subscribe('ROB','DrawEndExecution')
+    this.Subscribe('ROB','PenChanged');
+    this.Subscribe('ROB','DrawEndExecution');
 
 };
 
