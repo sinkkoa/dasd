@@ -19,7 +19,7 @@ app.use(bodyParser.json()); // Body parser uses JSON data
 var Station = function Station(number, workpiece) {
     this.number = number;
     this.workpiece = workpiece;
-    this.color = "blue";
+    this.color = "RED";
     this.status = "idle";
     this.port = 6000 + number;
     this.currentPallet = 0;
@@ -35,7 +35,7 @@ Station.prototype.runServer =  function() {
     var Server = http.createServer(function(req, res) {
         var method = req.method;
 
-        console.log("Method: " + method);
+        //console.log("Method: " + method);
 
         if (method === 'GET') {
             //Handle GET method.
@@ -51,8 +51,8 @@ Station.prototype.runServer =  function() {
                 //console.log("Body???: " + body);
                 body = body.toString();
                 body = JSON.parse(body);
-                console.log("Parsed JSON body: ");
-                console.log(body);
+                //console.log("Parsed JSON body: ");
+                //console.log(body);
 
                 // If the body has a senderID, we know that the post has come from Fastory line
                 if (body.hasOwnProperty('senderID')){
@@ -78,11 +78,15 @@ Station.prototype.runServer =  function() {
 
                         // Wait for Z3 change and then check is this frame, screen or keyboard station
                         else if (body.id === 'Z3_Changed' && body.payload.PalletID !== -1){
-                            if (ref.workpiece = "frame"){
+                            console.log("---> "+ ref.workpiece);
+                            if (ref.workpiece === "frame"){
                                 // If the station has right pen, draws the picture
+                                console.log("Frame branch");
+                                console.log(currentOrder);
                                 if (ref.color === currentOrder.fc){
-                                    console.log("Drawing a frame")
+                                    console.log("Drawing a frame. FC: " + currentOrder.fc)
                                     draw(ref.number, ref.workpiece, currentOrder);
+                                    console.log("Piirrän: " + currentOrder.fc);
                                 }
                                 // If the pen is not right, change the pen
                                 else {
@@ -90,22 +94,24 @@ Station.prototype.runServer =  function() {
                                     changePen(ref.number, currentOrder.fc);
                                 }
                             }
-                            else if (ref.workpiece = "screen"){
-                                if (ref.color === currentOrder.fc){
-                                    console.log("Drawing a screen")
+                            else if (ref.workpiece === "screen"){
+                                console.log("Screen branch");
+                                if (ref.color === currentOrder.sc){
+                                    console.log("Drawing a screen. SC: " + currentOrder.sc)
                                     draw(ref.number, ref.workpiece, currentOrder);
                                 } else {
                                     console.log("Changing the pen colour")
-                                    changePen(ref.number, currentOrder.fc);
+                                    changePen(ref.number, currentOrder.sc);
                                 }
                             }
-                            else if (ref.workpiece = "keyboard"){
-                                if (ref.color === currentOrder.fc){
-                                    console.log("Drawing a keyboard")
+                            else if (ref.workpiece === "keyboard"){
+                                console.log("Keyboard branch");
+                                if (ref.color === currentOrder.kc){
+                                    console.log("Drawing a keyboard. KC: " + currentOrder.sc)
                                     draw(ref.number, ref.workpiece, currentOrder);
                                 } else {
                                     console.log("Changing the pen colour")
-                                    changePen(ref.number, currentOrder.fc);
+                                    changePen(ref.number, currentOrder.kc);
                                 }
                             }
 
@@ -247,17 +253,17 @@ function move(zone, station) {
 function changePen(station, colour) {
 
     var port = 6000 + station;
-    colour = colour.toUpperCase();
+    var penColor = colour.toUpperCase();
 
     var options = {
-        uri: "http://localhost:3000/RTU/SimROB" + station + "/services/ChangePen" + colour,
+        uri: "http://localhost:3000/RTU/SimROB" + station + "/services/ChangePen" + penColor,
         method: 'POST',
         json: {"destUrl": "http://localhost:" + port}
     };
 
     request(options, function (err, response, body) {
         if (err) { console.log(err);
-        } else { console.log("Colour changed");
+        } else { console.log("Colour changed to: " + penColor + "\n");
         }
     });
 }
@@ -265,16 +271,19 @@ function changePen(station, colour) {
 // a function that draws to paper
 function draw(station, tool, pallet) {
     var port = 6000 + station;
-    var recipe;
+    var recipe = 0;
+
     // Decide what recipe to use
     if (tool === 'frame') {
         recipe = pallet.frame;
     }
     else if (tool === 'keyboard') {
-        recipe = 3 + pallet.keyboard;
+        recipe = 3 + parseInt(pallet.keyboard);
     }
     else if (tool === 'screen') {
-        recipe = 6 + pallet.screen;
+        recipe = 6 + parseInt(pallet.screen);
+        console.log(pallet.sceen);
+        console.log(recipe);
     }
 
     var options = {
@@ -285,7 +294,7 @@ function draw(station, tool, pallet) {
 
     request(options, function (err, response, body) {
         if (err) { console.log(err);
-        } else { console.log("Picture drawn");
+        } else { console.log("Picture drawn:" + options.uri);
         }
     });
 }
@@ -304,7 +313,7 @@ function updateDestination(pID, destination) {
         if (error) {
             console.log(error);
         } else {
-            console.log(response.statusCode, body);
+            //console.log(response.statusCode, body);
         }
     });
 }
@@ -325,7 +334,7 @@ function getInfo(pID, port) {
         if (error) {
             console.log(error);
         } else {
-            console.log(response.statusCode, body);
+            //console.log(response.statusCode, body);
         }
     });
 };
@@ -344,7 +353,7 @@ Station.prototype.requestStatus = function (stationPort) {
         if (error) {
             console.log(error);
         } else {
-            console.log(response.statusCode, body);
+            //console.log(response.statusCode, body);
         }
     });
 }
@@ -366,7 +375,7 @@ Station.prototype.SendStatus = function (requestedPort) {
         if (error) {
             console.log(error);
         } else {
-            console.log(response.statusCode, body);
+            //console.log(response.statusCode, body);
         }
     });
 
@@ -442,7 +451,7 @@ var WS4 = new Station(4,'frame');
 var WS5 = new Station(5,'screen');
 var WS6 = new Station(6,'screen');
 var WS8 = new Station(8,'screen');
-var WS9 = new Station(9,'screen');
+var WS9 = new Station(9,'keyboard');
 var WS10 = new Station(10,'keyboard');
 var WS11 = new Station(11,'keyboard');
 var WS12 = new Station(12,'keyboard');
