@@ -94,7 +94,6 @@ function subscribe() {
         });
 }
 
-
 // a function that moves pallet to different zone
 function move(zone, station) {
     console.log("movePallet to zone: " + zone);
@@ -242,7 +241,6 @@ app.post('/', function(req, res) {
             // If for moving the pallet from the paper loading
             if (req.body.id === 'PaperLoaded') {
                 requestStatus(6002, 6001);
-   //             move(35,1);
             }
             // If for moving the pallet from the paper unloading
             if (req.body.id === 'PaperUnloaded') {
@@ -277,11 +275,8 @@ app.post('/', function(req, res) {
             updateInfoPaper(req.body.pID, false, true);
         }
     }
-
     res.end('Post ok');
-
 });
-
 
 // Calls the subscribe function
 subscribe();

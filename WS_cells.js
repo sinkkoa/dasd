@@ -45,6 +45,7 @@ var Station = function Station(number, workpiece) {
 Station.prototype.runServer =  function() {
 
     var ref = this;
+    var helpnumber = 0;
     var currentOrder = {};
     console.log("Server port: " + ref.port);
 
@@ -145,10 +146,12 @@ Station.prototype.runServer =  function() {
                     }
                     // Catch the messages if they have come from ROB
                     if (body.senderID === 'SimROB' + ref.number) {
+                      // If the pen is changed, fraw the picture
                         if (body.id === 'PenChanged') {
                             console.log("Drawing a " + ref.workpiece)
                             draw(ref.number, ref.workpiece, currentOrder);
                         }
+                        // If the drawing has done, decide the next station
                         if (body.id === 'DrawEndExecution') {
                             // Ask the next destination based on what station pallet is
                             if (ref.number === 2 || ref.number === 3 || ref.number === 4) {
@@ -160,55 +163,21 @@ Station.prototype.runServer =  function() {
                             else if (ref.number === 9 || ref.number === 10 || ref.number === 11) {
                                 // Sends the pallet back to WS1 for unloading the paper
                                 updateDestination(currentOrder.pID, 1);
-                                move(35, ref.number)
+                                ref.status = 'idle';
+                                move(35, ref.number);
                             }
-
-
-                            // Move to next destination
-                            // move(35, ref.number);
-                            // ref.status = 'idle';
-
                         }
                     }
-
 
                 // The body now has destination in it, so it has come from WS7 and is telling the pallet details
                 } else if (body.hasOwnProperty('destination')){
-                    if (body.destination === 0) {
-                        // Decide the next destination
-                    }
                     // If the destination is same as this station, move the pallet to the station
-                    else if (body.destination === ref.number) {
+                    if (body.destination === ref.number) {
                         currentOrder = body;
-                        ref.status = "busy";
                         ref.currentPallet = body.pID;
                         move(12,ref.number);
-
                     }
-/*                    else if (body.destination === ref.number && ref.currentPallet !== 0) {
-                        if (ref.workpiece = "frame"){
-                            if (ref.color === body.fc){
-                                draw(ref.number, ref.workpiece, body);
-                            } else {
-                                changePen(ref.number, body.fc);
-                            }
-                        }
-                        else if (ref.workpiece = "screen"){
-                            if (ref.color === body.fc){
-                                draw(ref.number, ref.workpiece, body);
-                            } else {
 
-                            }
-                        }
-                        else if (ref.workpiece = "keyboard"){
-                            if (ref.color === body.fc){
-                                draw(ref.number, ref.workpiece, body);
-                            } else {
-
-                            }
-                        }
-
-                    }*/
                     // If the destination is further than the current workstation or it is station 1 --> Move on
                     else if (body.destination > ref.number || body.destination === 1) {
                         // The pallet is now in zone 1, and needs to move forward
@@ -222,32 +191,45 @@ Station.prototype.runServer =  function() {
                 // If the status of the station is requested, sends it
                 else if (body.hasOwnProperty('id')) {
                     if (body.id === 'getStatus') {
-                        ref.SendStatus(body.port)
+                        ref.SendStatus(body.port);
                     }
                 }
+                // if status is received, checks if its idle or busy
                 else if (body.hasOwnProperty('status')) {
+                    // Status is idle, so the pallet is send there
                     if (body.status === 'idle') {
                         console.log("UPDATE DESTINATION")
                         updateDestination(currentOrder.pID, body.station);
-                      //  helpnumber = 0;
+                        helpnumber = 0;
                         ref.status = 'idle';
                         move(35,ref.number);
-                        // maybe update status now
                     }
                     // Station is not idle, so we asks the other two stations
-                    /*else {
+                    else {
                         ++ helpnumber;
+                        // A if that makes this loop between three adjacent ports
+                        // until one of them is idle
                         if (helpnumber > 2) {
                             helpnumber = 0;
                         }
-                        requestStatus(6002 + helpnumber, 6001);
-                    }*/
+                        // For stations 2,3 and 4 the stations that are asked are 5, 6 and 8
+                        if (ref.number === 2 || ref.number === 3 || ref.number === 4) {
+                          if (helpnumber === 2) {
+                            ref.requestStatus(6008);
+                          }
+                          else {
+                            ref.requestStatus(6005 + helpnumber);
+                          }
+                        }
+                        // For stations 5,6 and 8 the stations that are asked are 9, 10 and 11
+                        else if (ref.number === 5 || ref.number === 6 || ref.number === 8) {
+                            ref.requestStatus(6009 + helpnumber);
+                        }
+                    }
                 }
-        
+
             })
-
             res.end('OK');
-
         }
     })
         Server.listen(this.port, function() {
@@ -345,7 +327,6 @@ function updateDestination(pID, destination) {
     });
 }
 
-
 // Request the pallet information from WS7
 function getInfo(pID, port) {
     var options = {
@@ -413,34 +394,6 @@ Station.prototype.SendStatus = function (requestedPort) {
     }
 };
 
-/*Station.prototype.GetStatus = function (location, recept, ID)
-{
-    console.log('Asking for the status '+ ID);
-    var ref = this;
-    var cellport = serverBasePort+cellPlace;
-
-    var options = {
-        uri: fastIP + ':' + cellport, // What url
-        method: 'POST',
-        json: {
-            "location" : ""+this.place+"", "recept": recept, "ID": ID
-        }
-    };
-
-    var destination = 0;
-    request(options, function (error, response, body){
-
-        if (!error && response.statusCode === 200) {
-            console.log("palletin body =" + body); // Print the shortened url.
-        }
-        else
-        {
-            console.log(error);
-        }
-    })
-
-};*/
-
 Station.prototype.Subscribe = function (RTU_ID, service)
 {
     var port = 6000 + this.number;
@@ -494,5 +447,3 @@ WS9.start();
 WS10.start();
 WS11.start();
 WS12.start();
-
-
