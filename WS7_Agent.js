@@ -127,12 +127,7 @@ function unloadPallet() {
             }
 
             console.log("Unloading pallet from the zone3!");
-            // debuggausta varten voi logata juttuja:
-            // console.log(err);
-            // console.log(body);
-            // console.log(httpResponse);
         });
-        
 }
 
 // Send the pallet information to other stations
@@ -150,7 +145,6 @@ function sendInfo(info, stationPort) {
         }
     });
 }
-
 
 // a function that moves pallet to different zone
 function move(zone, station) {
@@ -180,22 +174,14 @@ app.post('/order/', function(req, res){
                             // mutta jos postmanilla tekee tilausken parametreina niin ok.
                             //Tallennetaan tilaus palletionlatauksen ytheydessä sen id:n kanssa samaan objektiin
 
-    //console.log(req);
-    console.log(query);
-    console.log();
+
     // Access the attributes and store them into variables
-    
     frame = query.frame;
     screen = query.screen;
     keyboard = query.keyboard;
     fc = query.fc;
     sc = query.sc;
     kc = query.kc;
-/*
-    console.log(frame);
-    console.log(screen);
-    console.log(keyboard);
-*/
 
     // Load the pallet to FASTory line
     loadPallet();
@@ -203,7 +189,6 @@ app.post('/order/', function(req, res){
     // Ending request to prevent timeouts
     res.end('Phone has been ordered. Order ok!');
 });
-
 
 // Takes the POST requests
 app.post('/', function(req, res){
@@ -249,13 +234,13 @@ app.post('/', function(req, res){
     }
 
     // if the body has getInfo ID, uses sendInfo function to send the pallet info
-    if (req.body.id === 'getInfo') {
+    else if (req.body.id === 'getInfo') {
         var information = pallets[req.body.pallet];
         sendInfo(information, req.body.port);
     }
 
     // If the body ID is updateInfoPaper, checks what data is changed, and changes it
-    if (req.body.id === 'updateInfoPaper') {
+    else if (req.body.id === 'updateInfoPaper') {
         // Paper info s now changed
         if (req.body.hasOwnProperty('paper')) {
             if (pallets[req.body.pallet]) {
@@ -266,30 +251,28 @@ app.post('/', function(req, res){
             }
         }
     }
-    if (req.body.id === 'updateDestination') {
+    else if (req.body.id === 'updateDestination') {
         // Destination is now changed
-        console.log("DESTINATION INFO")
-        console.log(req.body)
         if (pallets[req.body.pallet]) {
             pallets[req.body.pallet].destination = req.body.destination;
             console.log("destination updated!")
         }
     }
 
-    if (req.body.senderID === 'SimCNV7') {
+    else if (req.body.senderID === 'SimCNV7') {
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             var id = req.body.payload.PalletID;
             if (pallets.hasOwnProperty(id)) {
                 move(12, 7);
             }
         }
-        if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
+        else if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
             var id = req.body.payload.PalletID;
             if (pallets.hasOwnProperty(id)) {
                 move(23, 7);
             }
         }
-        if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
+        else if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
             var id = req.body.payload.PalletID;
             if (pallets.hasOwnProperty(id)) {
                 if (pallets[id].paper === false && pallets[id].ready === true) {
@@ -317,9 +300,6 @@ subscribe();
 
 // Start listening
 http.listen(port, function(){
-    
-    
-    
     ('Program listens to port ' + port);
     console.log('\n');
 });

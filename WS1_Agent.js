@@ -228,33 +228,34 @@ app.post('/', function(req, res) {
             if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
                 move(12,1);
             }
-            if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
+            else if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
                 move(23,1);
             }
-            if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
+            else if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {
                 getInfo(req.body.payload.PalletID);
                 pIDinStation = req.body.payload.PalletID;
                 // loadPaper();
             }
         }
-        if (req.body.senderID === 'SimROB1') {
+        else if (req.body.senderID === 'SimROB1') {
             // If for moving the pallet from the paper loading
             if (req.body.id === 'PaperLoaded') {
                 requestStatus(6002, 6001);
             }
             // If for moving the pallet from the paper unloading
-            if (req.body.id === 'PaperUnloaded') {
+            else if (req.body.id === 'PaperUnloaded') {
                 move(35,1);
             }
         }
     }
-    if (req.body.hasOwnProperty('status')) {
+
+    else if (req.body.hasOwnProperty('status')) {
+        // If we have received station status that is idle, we send he pallet to that station
         if (req.body.status === 'idle') {
             console.log("UPDATE DESTINATION")
             updateDestination(pIDinStation, req.body.station);
             helpnumber = 0;
             move(35,1);
-            // maybe update status now
         }
         // Station is not idle, so we asks the other two stations
         else {
@@ -265,12 +266,15 @@ app.post('/', function(req, res) {
             requestStatus(6002 + helpnumber, 6001);
         }
     }
-    if (req.body.hasOwnProperty('paper')) {
+
+    // If we have received pallet information about paper, decides if the paper
+    // should be loaded or unloaded
+    else if (req.body.hasOwnProperty('paper')) {
         if (req.body.paper === false) {
             loadPaper();
             updateInfoPaper(req.body.pID, true, false);
         }
-        if (req.body.paper === true) {
+        else if (req.body.paper === true) {
             unloadPaper();
             updateInfoPaper(req.body.pID, false, true);
         }
