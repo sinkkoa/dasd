@@ -15,3 +15,17 @@ controlling the line.
 
 As a system receives an order to make a mobile phone, the agents should negotiate between each other
 developing the way to make the phone and then executing actual production of the phone.
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+The order should be done by sending via Postman following Params:
+
+| Key           | Value         |
+| ------------- |:-------------:|
+| frame         | number [1-3]  |
+| keyboard      | number [1-3]  |
+| screen        | number [1-3]  |
+| fc            | color [red/blue/green]  |
+| kc            | color [red/blue/green]  |
+| sc            | color [red/blue/green]  |
