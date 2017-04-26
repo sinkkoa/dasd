@@ -11,6 +11,22 @@ var uuid = require('uuid');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
 
+var exit = function exit() {
+  setTimeout(function () {
+    process.exit(1);
+  }, 0);
+};
+
+app.use(function (error, req, res, next) {
+  if (error.status === 400) {
+    log.info(error.body);
+    return res.send(400);
+  }
+
+  log.error(error);
+  exit();
+});
+
 var port = 6007;
 
 // A json where we can store the pallets that are in the production line.
@@ -33,7 +49,7 @@ function subscribe() {
         {form:{destUrl:"http://localhost:" + port}}, function(err, httpResponse, body){
             console.log(body);
             if (err) {
-                console.log(err);
+                console.log(err + "10");
             } else {
                 console.log("Reseted Fastory line");
             }
@@ -43,7 +59,7 @@ function subscribe() {
     request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
-                console.log(err);
+                console.log(err + "11");
             } else {
                 console.log("subscribed to the PalletLoaded event!");
             }
@@ -53,7 +69,7 @@ function subscribe() {
     request.post('http://localhost:3000/RTU/SimCNV7/events/Z1_Changed/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
-                console.log(err);
+                console.log(err + "12");
             } else {
                 console.log("subscribed to the Z1 changed in station 7!");
             }
@@ -63,7 +79,7 @@ function subscribe() {
     request.post('http://localhost:3000/RTU/SimCNV7/events/Z2_Changed/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
-                console.log(err);
+                console.log(err + "14");
             } else {
                 console.log("subscribed to the Z1 changed in station 7!");
             }
@@ -73,7 +89,7 @@ function subscribe() {
     request.post('http://localhost:3000/RTU/SimCNV7/events/Z3_Changed/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
-                console.log(err);
+                console.log(err+ "15");
             } else {
                 console.log("subscribed to the Z3 changed in station 7!");
             }
@@ -86,7 +102,7 @@ function loadPallet() {
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             // Checks for errors
             if (err) {
-                console.log(err);
+                console.log(err+ "13");
             } else {
                 //console.log(body);
             }
@@ -105,7 +121,7 @@ function unloadPallet() {
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             // Checks for errors
             if (err) {
-                console.log(err);
+                console.log(err + "16");
             } else {
                 //console.log(body);
             }
@@ -116,6 +132,7 @@ function unloadPallet() {
             // console.log(body);
             // console.log(httpResponse);
         });
+        
 }
 
 // Send the pallet information to other stations
@@ -127,7 +144,7 @@ function sendInfo(info, stationPort) {
     };
     request(options, function (error, response, body) {
         if (error) {
-            console.log(error);
+            console.log(error + "17");
         } else {
             console.log(response.statusCode, body);
         }
@@ -146,7 +163,7 @@ function move(zone, station) {
     };
 
     request(options, function (err, response, body) {
-        if (err) { console.log(err);
+        if (err) { console.log(err + "18");
         } else { console.log("liikkuu -------------------->");
         }
     });
@@ -154,6 +171,7 @@ function move(zone, station) {
 
 // Make new order
 app.post('/order/', function(req, res){
+    
     var data = {
         "New Order": ""
     };
@@ -279,6 +297,8 @@ app.post('/', function(req, res){
                     unloadPallet();
                     // Delete the pallet information from pallets json
                     delete pallets[id];
+                    console.log("Loppu");
+                    res.end("Pallet completed");
                 }
 
                 else if (pallets[id].paper === true) {
@@ -288,7 +308,6 @@ app.post('/', function(req, res){
             }
         }
     }
-
     // End request
     res.end('Post ok');
 });
@@ -298,6 +317,9 @@ subscribe();
 
 // Start listening
 http.listen(port, function(){
-    console.log('Program listens to port ' + port);
+    
+    
+    
+    ('Program listens to port ' + port);
     console.log('\n');
 });

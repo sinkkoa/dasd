@@ -10,6 +10,22 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+var exit = function exit() {
+  setTimeout(function () {
+    process.exit(1);
+  }, 0);
+};
+
+app.use(function (error, req, res, next) {
+  if (error.status === 400) {
+    log.info(error.body);
+    return res.send(400);
+  }
+
+  log.error(error);
+  exit();
+});
+
 var port = 6001;
 var helpnumber = 0;
 var pIDinStation;

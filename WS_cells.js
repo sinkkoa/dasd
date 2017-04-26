@@ -15,6 +15,22 @@ var WS1_Agent = require('./WS1_Agent.js');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // Body parser uses JSON data
 
+var exit = function exit() {
+  setTimeout(function () {
+    process.exit(1);
+  }, 0);
+};
+
+app.use(function (error, req, res, next) {
+  if (error.status === 400) {
+    log.info(error.body);
+    return res.send(400);
+  }
+
+  log.error(error);
+  exit();
+});
+
 // Workstation information
 var Station = function Station(number, workpiece) {
     this.number = number;
@@ -79,6 +95,9 @@ Station.prototype.runServer =  function() {
                         // Wait for Z3 change and then check is this frame, screen or keyboard station
                         else if (body.id === 'Z3_Changed' && body.payload.PalletID !== -1){
                             console.log("---> "+ ref.workpiece);
+                            currentOrder.fc = currentOrder.fc.toUpperCase();
+                            currentOrder.sc = currentOrder.sc.toUpperCase();
+                            currentOrder.kc = currentOrder.kc.toUpperCase();
                             if (ref.workpiece === "frame"){
                                 // If the station has right pen, draws the picture
                                 console.log("Frame branch");
@@ -90,7 +109,8 @@ Station.prototype.runServer =  function() {
                                 }
                                 // If the pen is not right, change the pen
                                 else {
-                                    console.log("Changing the pen colour")
+                                    console.log("Changing the pen colour");
+                                    ref.color = currentOrder.fc;
                                     changePen(ref.number, currentOrder.fc);
                                 }
                             }
@@ -100,7 +120,8 @@ Station.prototype.runServer =  function() {
                                     console.log("Drawing a screen. SC: " + currentOrder.sc)
                                     draw(ref.number, ref.workpiece, currentOrder);
                                 } else {
-                                    console.log("Changing the pen colour")
+                                    console.log("Changing the pen colour");
+                                    ref.color = currentOrder.sc;
                                     changePen(ref.number, currentOrder.sc);
                                 }
                             }
@@ -110,7 +131,8 @@ Station.prototype.runServer =  function() {
                                     console.log("Drawing a keyboard. KC: " + currentOrder.sc)
                                     draw(ref.number, ref.workpiece, currentOrder);
                                 } else {
-                                    console.log("Changing the pen colour")
+                                    console.log("Changing the pen colour");
+                                    ref.color = currentOrder.kc;
                                     changePen(ref.number, currentOrder.kc);
                                 }
                             }
@@ -224,6 +246,8 @@ Station.prototype.runServer =  function() {
         
             })
 
+            res.end('OK');
+
         }
     })
         Server.listen(this.port, function() {
@@ -244,7 +268,7 @@ function move(zone, station) {
     };
 
     request(options, function (err, response, body) {
-        if (err) { console.log(err);
+        if (err) { console.log(err + "1");
         } else { console.log("liikkuu");
         }
     });
@@ -262,7 +286,7 @@ function changePen(station, colour) {
     };
 
     request(options, function (err, response, body) {
-        if (err) { console.log(err);
+        if (err) { console.log(err + "2");
         } else { console.log("Colour changed to: " + penColor + "\n");
         }
     });
@@ -276,13 +300,16 @@ function draw(station, tool, pallet) {
     // Decide what recipe to use
     if (tool === 'frame') {
         recipe = pallet.frame;
+        console.log(recipe);
+
     }
     else if (tool === 'keyboard') {
         recipe = 3 + parseInt(pallet.keyboard);
+        console.log(recipe);
+
     }
     else if (tool === 'screen') {
         recipe = 6 + parseInt(pallet.screen);
-        console.log(pallet.sceen);
         console.log(recipe);
     }
 
@@ -293,7 +320,7 @@ function draw(station, tool, pallet) {
     };
 
     request(options, function (err, response, body) {
-        if (err) { console.log(err);
+        if (err) { console.log(err + "3");
         } else { console.log("Picture drawn:" + options.uri);
         }
     });
@@ -311,7 +338,7 @@ function updateDestination(pID, destination) {
     };
     request(options, function (error, response, body) {
         if (error) {
-            console.log(error);
+            console.log(error + "4");
         } else {
             //console.log(response.statusCode, body);
         }
@@ -332,7 +359,7 @@ function getInfo(pID, port) {
     };
     request(options, function (error, response, body) {
         if (error) {
-            console.log(error);
+            console.log(error + "5");
         } else {
             //console.log(response.statusCode, body);
         }
@@ -351,7 +378,7 @@ Station.prototype.requestStatus = function (stationPort) {
     };
     request(options, function (error, response, body) {
         if (error) {
-            console.log(error);
+            console.log(error + "6");
         } else {
             //console.log(response.statusCode, body);
         }
@@ -373,7 +400,7 @@ Station.prototype.SendStatus = function (requestedPort) {
 
     request(options, function (error, response, body) {
         if (error) {
-            console.log(error);
+            console.log(error + "7");
         } else {
             //console.log(response.statusCode, body);
         }
@@ -422,7 +449,7 @@ Station.prototype.Subscribe = function (RTU_ID, service)
     request.post('http://localhost:3000/RTU/Sim' + RTU_ID + this.number + '/events/' + service + '/notifs',
         {form:{destUrl:"http://localhost:" + port}}, function(err,httpResponse,body){
             if (err) {
-                console.log(err);
+                console.log(err + "8");
             } else {
                 console.log("subscribed to the " + service + " event!");
             }
