@@ -262,17 +262,13 @@ app.post('/', function(req, res){
         if (req.body.id === 'Z1_Changed' && req.body.payload.PalletID !== -1) {
             var id = req.body.payload.PalletID;
             if (pallets.hasOwnProperty(id)) {
-                if (pallets[id].destination === 1) {
-                    move(12, 7);
-                }
+                move(12, 7);
             }
         }
         if (req.body.id === 'Z2_Changed' && req.body.payload.PalletID !== -1) {
             var id = req.body.payload.PalletID;
             if (pallets.hasOwnProperty(id)) {
-                if (pallets[id].destination === 1) {
-                    move(23, 7);
-                }
+                move(23, 7);
             }
         }
         if (req.body.id === 'Z3_Changed' && req.body.payload.PalletID !== -1) {

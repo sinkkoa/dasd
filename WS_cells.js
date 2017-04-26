@@ -130,7 +130,9 @@ Station.prototype.runServer =  function() {
                                 ref.requestStatus(6009);
                             }
                             else if (ref.number === 9 || ref.number === 10 || ref.number === 11) {
-                                // Something happens
+                                // Sends the pallet back to WS1 for unloading the paper
+                                updateDestination(currentOrder.pID, 1);
+                                move(35, ref.number)
                             }
 
 
