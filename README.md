@@ -29,3 +29,5 @@ The order should be done by sending via Postman following Params:
 | fc            | color [red/blue/green]  |
 | kc            | color [red/blue/green]  |
 | sc            | color [red/blue/green]  |
+
+Address for Postman orders is http://localhost:6007/order/ which is the Workstation 7.
