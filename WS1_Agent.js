@@ -244,6 +244,7 @@ app.post('/', function(req, res) {
             }
             // If for moving the pallet from the paper unloading
             else if (req.body.id === 'PaperUnloaded') {
+                updateDestination(pIDinStation, 7);
                 move(35,1);
             }
         }
