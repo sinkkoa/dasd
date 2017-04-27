@@ -36,7 +36,7 @@ var Station = function Station(number, workpiece) {
     this.color = "RED";
     this.status = "idle";
     this.port = 6000 + number;
-    this.currentPallet = 0;
+    //this.currentPallet = 0;
 };
 
 // A function that runs all the workstation servers
@@ -100,7 +100,7 @@ Station.prototype.runServer =  function() {
                                 console.log("Frame branch");
                                 console.log(currentOrder);
                                 if (ref.color === currentOrder.fc){
-                                    console.log("Drawing a frame. FC: " + currentOrder.fc)
+                                    console.log("Drawing a frame. FC: " + currentOrder.fc);
                                     draw(ref.number, ref.workpiece, currentOrder);
                                     console.log("Piirrän: " + currentOrder.fc);
                                 }
@@ -114,7 +114,7 @@ Station.prototype.runServer =  function() {
                             else if (ref.workpiece === "screen"){
                                 console.log("Screen branch");
                                 if (ref.color === currentOrder.sc){
-                                    console.log("Drawing a screen. SC: " + currentOrder.sc)
+                                    console.log("Drawing a screen. SC: " + currentOrder.sc);
                                     draw(ref.number, ref.workpiece, currentOrder);
                                 } else {
                                     console.log("Changing the pen colour");
@@ -125,7 +125,7 @@ Station.prototype.runServer =  function() {
                             else if (ref.workpiece === "keyboard"){
                                 console.log("Keyboard branch");
                                 if (ref.color === currentOrder.kc){
-                                    console.log("Drawing a keyboard. KC: " + currentOrder.sc)
+                                    console.log("Drawing a keyboard. KC: " + currentOrder.sc);
                                     draw(ref.number, ref.workpiece, currentOrder);
                                 } else {
                                     console.log("Changing the pen colour");
@@ -144,7 +144,7 @@ Station.prototype.runServer =  function() {
                     else if (body.senderID === 'SimROB' + ref.number) {
                       // If the pen is changed, fraw the picture
                         if (body.id === 'PenChanged') {
-                            console.log("Drawing a " + ref.workpiece)
+                            console.log("Drawing a " + ref.workpiece);
                             draw(ref.number, ref.workpiece, currentOrder);
                         }
                         // If the drawing has done, decide the next station
@@ -193,7 +193,7 @@ Station.prototype.runServer =  function() {
                     else if (body.id === 'receiveStatus') {
                         // Status is idle, so the pallet is send there
                         if (body.status === 'idle') {
-                            console.log("UPDATE DESTINATION")
+                            console.log("UPDATE DESTINATION");
                             updateDestination(currentOrder.pID, body.station);
                             helpnumber = 0;
                             ref.status = 'idle';
@@ -224,10 +224,10 @@ Station.prototype.runServer =  function() {
                     }
                 }
 
-            })
+            });
             res.end('OK');
         }
-    })
+    });
         Server.listen(this.port, function() {
         //console.log('Server started on port: ' + ref.port);
 
@@ -313,7 +313,7 @@ function updateDestination(pID, destination) {
         json: {
             "id": "updateDestination",
             "pallet": pID,
-            "destination": destination,
+            "destination": destination
         }
     };
     request(options, function (error, response, body) {
@@ -343,11 +343,11 @@ function getInfo(pID, port) {
             //console.log(response.statusCode, body);
         }
     });
-};
+}
 
 // A function for requesting status from station
 Station.prototype.requestStatus = function (stationPort) {
-    var ref = this
+    var ref = this;
     var options = {
         uri: 'http://localhost:' + stationPort,
         method: 'Post',
@@ -363,7 +363,7 @@ Station.prototype.requestStatus = function (stationPort) {
             //console.log(response.statusCode, body);
         }
     });
-}
+};
 
 // A function for sending the station status
 Station.prototype.SendStatus = function (requestedPort) {
@@ -374,7 +374,7 @@ Station.prototype.SendStatus = function (requestedPort) {
         uri: 'http://localhost:' + requestedPort,
         method: 'POST',
         json: {
-            "id": "receiveStatus"
+            "id": "receiveStatus",
             "status": ref.status,
             "station": ref.number
         }

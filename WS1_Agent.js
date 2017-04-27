@@ -153,7 +153,7 @@ function getInfo(pID) {
             console.log(response.statusCode, body);
         }
     });
-};
+}
 
 function requestStatus(stationPort, asker) {
     var options = {
@@ -252,7 +252,7 @@ app.post('/', function(req, res) {
     else if (req.body.hasOwnProperty('status')) {
         // If we have received station status that is idle, we send he pallet to that station
         if (req.body.status === 'idle') {
-            console.log("UPDATE DESTINATION")
+            console.log("UPDATE DESTINATION");
             updateDestination(pIDinStation, req.body.station);
             helpnumber = 0;
             move(35,1);

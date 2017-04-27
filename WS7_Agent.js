@@ -212,25 +212,7 @@ app.post('/', function(req, res){
             "ready": false
          };
         move(35, 7);
-        
-        options = {
-            url: "http://localhost:6001/takeOrder", //Worksation 1
-            method: "POST",
-            //here we are using our server url:
-            json: {
-                "frame": frame,
-                "screen": screen,
-                "keyboard": keyboard,
-                "fc": fc,
-                "sc": sc,
-                "kc": kc,
 
-                "pID": pID,
-                "destination": null,
-                "ready": false
-            }
-        
-        }
     }
 
     // if the body has getInfo ID, uses sendInfo function to send the pallet info
@@ -245,7 +227,7 @@ app.post('/', function(req, res){
         if (req.body.hasOwnProperty('paper')) {
             if (pallets[req.body.pallet]) {
                 pallets[req.body.pallet].paper = req.body.paper;
-                console.log("paper status updated!")
+                console.log("paper status updated!");
                 pallets[req.body.pallet].ready = req.body.ready;
                 console.log("pallet status updated as ready!")
             }
@@ -300,6 +282,6 @@ subscribe();
 
 // Start listening
 http.listen(port, function(){
-    ('Program listens to port ' + port);
+    console.log('Program listens to port ' + port);
     console.log('\n');
 });
